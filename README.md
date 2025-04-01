@@ -32,8 +32,8 @@ Este proyecto es una aplicación web para la gestión de inventario y punto de v
 1. Clonar el repositorio:
 
    ```bash
-   git clone https://github.com/usuario/proyecto-ferreteria.git
-   cd proyecto-ferreteria
+   git clone https://github.com/Niko2Tech/ProyectoPortafolio.git
+   cd ProyectoPortafolio
    ```
 
 2. Instalar dependencias en frontend y backend:
