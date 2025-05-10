@@ -1,0 +1,428 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Usuario {
+  id        String   @id @default(uuid()) @db.Uuid
+  nombre    String   @db.VarChar(100)
+  apellido  String   @db.VarChar(100)
+  email     String   @unique @db.VarChar(100)
+  password  String   @db.VarChar(255)
+  rolId     Int      @map("rol_id")
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relaciones
+  rol                   Rol                    @relation(fields: [rolId], references: [id])
+  documentosVenta       DocumentoVenta[]
+  inventarioMovimientos InventarioMovimiento[]
+  cajas                 Caja[]
+  cajaMovimientos       CajaMovimiento[]
+
+  @@map("usuarios")
+}
+
+model Rol {
+  id          Int     @id @default(autoincrement())
+  nombre      String  @unique @db.VarChar(50)
+  descripcion String? @db.Text
+
+  // Relaciones
+  usuarios Usuario[]
+
+  @@map("roles")
+}
+
+model Cliente {
+  id                 String      @id @default(uuid()) @db.Uuid
+  tipoCliente        TipoCliente @map("tipo_cliente")
+  nombre             String?     @db.VarChar(100)
+  apellido           String?     @db.VarChar(100)
+  razonSocial        String?     @map("razon_social") @db.VarChar(150)
+  email              String?     @db.VarChar(100)
+  telefono           String?     @db.VarChar(20)
+  direccion          String?     @db.Text
+  comuna             String?     @db.VarChar(50)
+  ciudad             String?     @db.VarChar(50)
+  region             String?     @db.VarChar(50)
+  rut                String      @unique @db.VarChar(12)
+  giro               String?     @db.VarChar(100)
+  exentoIva          Boolean     @default(false) @map("exento_iva")
+  esClienteFrecuente Boolean     @default(false) @map("es_cliente_frecuente")
+  createdAt          DateTime    @default(now()) @map("created_at")
+  updatedAt          DateTime    @updatedAt @map("updated_at")
+
+  // Relaciones
+  documentosVenta DocumentoVenta[]
+
+  @@map("clientes")
+}
+
+enum TipoCliente {
+  persona
+  empresa
+
+  @@map("tipo_cliente")
+}
+
+model Producto {
+  id             String   @id @default(uuid()) @db.Uuid
+  sku            String   @unique @db.VarChar(50)
+  codigoBarras   String?  @map("codigo_barras") @db.VarChar(50)
+  nombre         String   @db.VarChar(100)
+  descripcion    String?  @db.Text
+  precioNeto     Decimal  @map("precio_neto") @db.Decimal(10, 2)
+  iva            Decimal  @db.Decimal(10, 2)
+  precioVenta    Decimal  @map("precio_venta") @db.Decimal(10, 2)
+  costoNeto      Decimal  @map("costo_neto") @db.Decimal(10, 2)
+  stockActual    Int      @map("stock_actual")
+  stockMinimo    Int      @map("stock_minimo")
+  unidadMedida   String?  @map("unidad_medida") @db.VarChar(20)
+  categoriaId    Int      @map("categoria_id")
+  subcategoriaId Int?     @map("subcategoria_id")
+  marcaId        Int?     @map("marca_id")
+  proveedorId    String?  @map("proveedor_id") @db.Uuid
+  afectoIva      Boolean  @default(true) @map("afecto_iva")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  // Relaciones
+  categoria              CategoriaProducto       @relation(fields: [categoriaId], references: [id])
+  subcategoria           SubcategoriaProducto?   @relation(fields: [subcategoriaId], references: [id])
+  marca                  Marca?                  @relation(fields: [marcaId], references: [id])
+  proveedor              Proveedor?              @relation(fields: [proveedorId], references: [id])
+  documentosVentaDetalle DocumentoVentaDetalle[]
+  comprasDetalle         CompraDetalle[]
+  inventarioMovimientos  InventarioMovimiento[]
+
+  @@map("producto")
+}
+
+model CategoriaProducto {
+  id          Int     @id @default(autoincrement())
+  nombre      String  @unique @db.VarChar(100)
+  descripcion String? @db.Text
+
+  // Relaciones
+  productos     Producto[]
+  subcategorias SubcategoriaProducto[]
+
+  @@map("categoria_producto")
+}
+
+model SubcategoriaProducto {
+  id          Int     @id @default(autoincrement())
+  categoriaId Int     @map("categoria_id")
+  nombre      String  @db.VarChar(100)
+  descripcion String? @db.Text
+
+  // Relaciones
+  categoria CategoriaProducto @relation(fields: [categoriaId], references: [id])
+  productos Producto[]
+
+  @@unique([categoriaId, nombre])
+  @@map("subcategoria_producto")
+}
+
+model Marca {
+  id          Int     @id @default(autoincrement())
+  nombre      String  @unique @db.VarChar(100)
+  descripcion String? @db.Text
+
+  // Relaciones
+  productos Producto[]
+
+  @@map("marcas")
+}
+
+model Proveedor {
+  id             String   @id @default(uuid()) @db.Uuid
+  razonSocial    String   @map("razon_social") @db.VarChar(150)
+  nombreFantasia String?  @map("nombre_fantasia") @db.VarChar(100)
+  rut            String   @unique @db.VarChar(12)
+  telefono       String?  @db.VarChar(20)
+  email          String?  @db.VarChar(100)
+  direccion      String?  @db.Text
+  comuna         String?  @db.VarChar(50)
+  ciudad         String?  @db.VarChar(50)
+  region         String?  @db.VarChar(50)
+  giro           String?  @db.VarChar(100)
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  // Relaciones
+  productos Producto[]
+  compras   Compra[]
+  gastos    Gasto[]
+
+  @@map("proveedores")
+}
+
+model MetodoPago {
+  id                  Int      @id @default(autoincrement())
+  codigo              String   @unique @db.VarChar(20)
+  nombre              String   @unique @db.VarChar(50)
+  descripcion         String?  @db.Text
+  requiereComprobante Boolean  @default(false) @map("requiere_comprobante")
+  activo              Boolean  @default(true)
+  permiteVuelto       Boolean  @default(false) @map("permite_vuelto")
+  permitePagoParcial  Boolean  @default(false) @map("permite_pago_parcial")
+  createdAt           DateTime @default(now()) @map("created_at")
+  updatedAt           DateTime @updatedAt @map("updated_at")
+
+  // Relaciones
+  documentosVenta DocumentoVenta[]
+  cajaMovimientos CajaMovimiento[]
+
+  @@map("metodos_pago")
+}
+
+model DocumentoVenta {
+  id                    String               @id @default(uuid()) @db.Uuid
+  tipoDocumento         TipoDocumentoVenta   @map("tipo_documento")
+  numeroDocumento       Int                  @map("numero_documento")
+  usuarioId             String               @map("usuario_id") @db.Uuid
+  clienteId             String?              @map("cliente_id") @db.Uuid
+  fechaEmision          DateTime             @map("fecha_emision")
+  subtotalNeto          Decimal              @map("subtotal_neto") @db.Decimal(10, 2)
+  iva                   Decimal              @db.Decimal(10, 2)
+  total                 Decimal              @db.Decimal(10, 2)
+  metodoPagoId          Int                  @map("metodo_pago_id")
+  estado                EstadoDocumentoVenta
+  documentoReferenciaId String?              @map("documento_referencia_id") @db.Uuid
+  comentarios           String?              @db.Text
+
+  // Relaciones
+  usuario                 Usuario                 @relation(fields: [usuarioId], references: [id])
+  cliente                 Cliente?                @relation(fields: [clienteId], references: [id])
+  metodoPago              MetodoPago              @relation(fields: [metodoPagoId], references: [id])
+  documentoReferencia     DocumentoVenta?         @relation("DocReferencia", fields: [documentoReferenciaId], references: [id])
+  documentosReferenciados DocumentoVenta[]        @relation("DocReferencia")
+  detalles                DocumentoVentaDetalle[]
+
+  @@unique([tipoDocumento, numeroDocumento])
+  @@map("documentos_venta")
+}
+
+enum TipoDocumentoVenta {
+  boleta
+  factura
+  nota_credito
+  guia_despacho
+
+  @@map("tipo_documento_venta")
+}
+
+enum EstadoDocumentoVenta {
+  emitida
+  pagada
+  anulada
+
+  @@map("estado_documento_venta")
+}
+
+model DocumentoVentaDetalle {
+  id                  String  @id @default(uuid()) @db.Uuid
+  documentoId         String  @map("documento_id") @db.Uuid
+  productoId          String  @map("producto_id") @db.Uuid
+  cantidad            Decimal @db.Decimal(10, 2)
+  precioUnitarioNeto  Decimal @map("precio_unitario_neto") @db.Decimal(10, 2)
+  ivaUnitario         Decimal @map("iva_unitario") @db.Decimal(10, 2)
+  descuentoPorcentaje Decimal @default(0) @map("descuento_porcentaje") @db.Decimal(5, 2)
+  descuentoMonto      Decimal @default(0) @map("descuento_monto") @db.Decimal(10, 2)
+  subtotalNeto        Decimal @map("subtotal_neto") @db.Decimal(10, 2)
+  ivaLinea            Decimal @map("iva_linea") @db.Decimal(10, 2)
+  totalLinea          Decimal @map("total_linea") @db.Decimal(10, 2)
+
+  // Relaciones
+  documento DocumentoVenta @relation(fields: [documentoId], references: [id])
+  producto  Producto       @relation(fields: [productoId], references: [id])
+
+  @@map("documentos_venta_detalle")
+}
+
+model Compra {
+  id              String              @id @default(uuid()) @db.Uuid
+  tipoDocumento   TipoDocumentoCompra @map("tipo_documento")
+  numeroDocumento String              @map("numero_documento") @db.VarChar(20)
+  proveedorId     String              @map("proveedor_id") @db.Uuid
+  fechaEmision    DateTime            @map("fecha_emision")
+  fechaRecepcion  DateTime?           @map("fecha_recepcion")
+  subtotalNeto    Decimal?            @map("subtotal_neto") @db.Decimal(10, 2)
+  iva             Decimal?            @db.Decimal(10, 2)
+  total           Decimal?            @db.Decimal(10, 2)
+  estado          EstadoCompra
+  createdAt       DateTime            @default(now()) @map("created_at")
+  updatedAt       DateTime            @updatedAt @map("updated_at")
+
+  // Relaciones
+  proveedor Proveedor       @relation(fields: [proveedorId], references: [id])
+  detalles  CompraDetalle[]
+
+  @@unique([proveedorId, tipoDocumento, numeroDocumento])
+  @@map("compras")
+}
+
+enum TipoDocumentoCompra {
+  factura
+  boleta
+  otro
+
+  @@map("tipo_documento_compra")
+}
+
+enum EstadoCompra {
+  pendiente
+  recibida
+  pagada
+  anulada
+
+  @@map("estado_compra")
+}
+
+model CompraDetalle {
+  id                 String  @id @default(uuid()) @db.Uuid
+  compraId           String  @map("compra_id") @db.Uuid
+  productoId         String  @map("producto_id") @db.Uuid
+  cantidad           Decimal @db.Decimal(10, 2)
+  precioUnitarioNeto Decimal @map("precio_unitario_neto") @db.Decimal(10, 2)
+  ivaUnitario        Decimal @map("iva_unitario") @db.Decimal(10, 2)
+  subtotalNeto       Decimal @map("subtotal_neto") @db.Decimal(10, 2)
+  ivaLinea           Decimal @map("iva_linea") @db.Decimal(10, 2)
+  totalLinea         Decimal @map("total_linea") @db.Decimal(10, 2)
+
+  // Relaciones
+  compra   Compra   @relation(fields: [compraId], references: [id])
+  producto Producto @relation(fields: [productoId], references: [id])
+
+  @@map("compras_detalle")
+}
+
+model CategoriaGasto {
+  id          Int     @id @default(autoincrement())
+  nombre      String  @unique @db.VarChar(100)
+  descripcion String? @db.Text
+
+  // Relaciones
+  gastos Gasto[]
+
+  @@map("categoria_gastos")
+}
+
+model Gasto {
+  id               String             @id @default(uuid()) @db.Uuid
+  tipoDocumento    TipoDocumentoGasto @map("tipo_documento")
+  numeroDocumento  String?            @map("numero_documento") @db.VarChar(20)
+  proveedorId      String             @map("proveedor_id") @db.Uuid
+  categoriaGastoId Int                @map("categoria_gasto_id")
+  montoNeto        Decimal            @map("monto_neto") @db.Decimal(10, 2)
+  iva              Decimal            @db.Decimal(10, 2)
+  total            Decimal            @db.Decimal(10, 2)
+  descripcion      String?            @db.Text
+  gastoRecurrente  Boolean            @default(false) @map("gasto_recurrente")
+  fecha            DateTime
+  createdAt        DateTime           @default(now()) @map("created_at")
+
+  // Relaciones
+  proveedor      Proveedor      @relation(fields: [proveedorId], references: [id])
+  categoriaGasto CategoriaGasto @relation(fields: [categoriaGastoId], references: [id])
+
+  @@map("gastos")
+}
+
+enum TipoDocumentoGasto {
+  factura
+  boleta
+  otro
+
+  @@map("tipo_documento_gasto")
+}
+
+model InventarioMovimiento {
+  id             String                   @id @default(uuid()) @db.Uuid
+  productoId     String                   @map("producto_id") @db.Uuid
+  tipoMovimiento TipoMovimientoInventario @map("tipo_movimiento")
+  cantidad       Decimal                  @db.Decimal(10, 2)
+  stockAnterior  Decimal                  @map("stock_anterior") @db.Decimal(10, 2)
+  stockNuevo     Decimal                  @map("stock_nuevo") @db.Decimal(10, 2)
+  origenId       String?                  @map("origen_id") @db.Uuid
+  origenTipo     String?                  @map("origen_tipo") @db.VarChar(50)
+  usuarioId      String                   @map("usuario_id") @db.Uuid
+  comentario     String?                  @db.Text
+  fecha          DateTime
+
+  // Relaciones
+  producto Producto @relation(fields: [productoId], references: [id])
+  usuario  Usuario  @relation(fields: [usuarioId], references: [id])
+
+  @@map("inventario_movimientos")
+}
+
+enum TipoMovimientoInventario {
+  entrada
+  salida
+  ajuste
+  devolucion
+
+  @@map("tipo_movimiento_inventario")
+}
+
+model Caja {
+  id                  String     @id @default(uuid()) @db.Uuid
+  usuarioId           String     @map("usuario_id") @db.Uuid
+  fechaApertura       DateTime   @map("fecha_apertura")
+  montoApertura       Decimal    @map("monto_apertura") @db.Decimal(10, 2)
+  fechaCierre         DateTime?  @map("fecha_cierre")
+  montoCierreEfectivo Decimal?   @map("monto_cierre_efectivo") @db.Decimal(10, 2)
+  montoCierreTarjetas Decimal?   @map("monto_cierre_tarjetas") @db.Decimal(10, 2)
+  montoCierreOtros    Decimal?   @map("monto_cierre_otros") @db.Decimal(10, 2)
+  diferencia          Decimal?   @db.Decimal(10, 2)
+  estado              EstadoCaja
+  comentario          String?    @db.Text
+
+  // Relaciones
+  usuario     Usuario          @relation(fields: [usuarioId], references: [id])
+  movimientos CajaMovimiento[]
+
+  @@map("caja")
+}
+
+enum EstadoCaja {
+  abierta
+  cerrada
+
+  @@map("estado_caja")
+}
+
+model CajaMovimiento {
+  id             String             @id @default(uuid()) @db.Uuid
+  cajaId         String             @map("caja_id") @db.Uuid
+  tipoMovimiento TipoMovimientoCaja @map("tipo_movimiento")
+  metodoPagoId   Int                @map("metodo_pago_id")
+  monto          Decimal            @db.Decimal(10, 2)
+  documentoId    String?            @map("documento_id") @db.Uuid
+  tipoDocumento  String?            @map("tipo_documento") @db.VarChar(50)
+  comentario     String?            @db.Text
+  fecha          DateTime
+  usuarioId      String             @map("usuario_id") @db.Uuid
+
+  // Relaciones
+  caja       Caja       @relation(fields: [cajaId], references: [id])
+  metodoPago MetodoPago @relation(fields: [metodoPagoId], references: [id])
+  usuario    Usuario    @relation(fields: [usuarioId], references: [id])
+
+  @@map("caja_movimientos")
+}
+
+enum TipoMovimientoCaja {
+  ingreso
+  egreso
+
+  @@map("tipo_movimiento_caja")
+}
