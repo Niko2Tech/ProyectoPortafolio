@@ -72,7 +72,16 @@ export class UsersService {
   }
 
   async remove(id: string) {
-    const user = await this.prisma.usuario.delete({ where: { id } });
-    return plainToInstance(UserResponseEntity, user);
+    try {
+      const user = await this.prisma.usuario.delete({ where: { id } });
+      return plainToInstance(UserResponseEntity, user);
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        if (error.code === 'P2025') {
+          throw new BadRequestException('Usuario no encontrado');
+        }
+      }
+      throw error;
+    }
   }
 }
