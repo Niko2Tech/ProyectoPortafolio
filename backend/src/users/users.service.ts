@@ -5,6 +5,8 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { hashPassword } from 'src/utils/bcrypt.util';
 import { plainToInstance } from 'class-transformer';
 import { UserResponseEntity } from './entities/user.entity';
+import { Prisma } from '@prisma/client';
+import { BadRequestException } from '@nestjs/common';
 
 @Injectable()
 export class UsersService {
@@ -12,14 +14,31 @@ export class UsersService {
 
   async create(createUserDto: CreateUserDto) {
     const { password, ...rest } = createUserDto;
-    const hashedPassword = await hashPassword(password);
-    const user = await this.prisma.usuario.create({
-      data: {
-        ...rest,
-        password: hashedPassword,
-      },
+    const rol = await this.prisma.rol.findUnique({
+      where: { id: createUserDto.rolId },
     });
-    return plainToInstance(UserResponseEntity, user);
+    if (!rol) {
+      throw new BadRequestException(
+        `El rol con ID ${createUserDto.rolId} no existe`,
+      );
+    }
+    const hashedPassword = await hashPassword(password);
+    try {
+      const user = await this.prisma.usuario.create({
+        data: {
+          ...rest,
+          password: hashedPassword,
+        },
+      });
+      return plainToInstance(UserResponseEntity, user);
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        if (error.code === 'P2002') {
+          throw new BadRequestException('Email ya registrado');
+        }
+      }
+      throw error;
+    }
   }
 
   async findAll() {
