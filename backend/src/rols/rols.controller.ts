@@ -10,7 +10,13 @@ import {
 import { RolsService } from './rols.service';
 import { CreateRolDto } from './dto/create-rol.dto';
 import { UpdateRolDto } from './dto/update-rol.dto';
+import { JwtAuthGuard } from 'src/auth/jwt/jwt.guard';
+import { ApiTags, ApiCookieAuth } from '@nestjs/swagger';
+import { UseGuards } from '@nestjs/common';
 
+@ApiTags('Roles')
+@ApiCookieAuth()
+@UseGuards(JwtAuthGuard)
 @Controller('rols')
 export class RolsController {
   constructor(private readonly rolsService: RolsService) {}
