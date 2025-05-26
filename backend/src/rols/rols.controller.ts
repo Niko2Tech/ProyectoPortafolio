@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { RolsService } from './rols.service';
 import { CreateRolDto } from './dto/create-rol.dto';
@@ -32,17 +33,20 @@ export class RolsController {
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string) {
-    return await this.rolsService.findOne(+id);
+  async findOne(@Param('id', ParseIntPipe) id: number) {
+    return await this.rolsService.findOne(id);
   }
 
   @Patch(':id')
-  async update(@Param('id') id: string, @Body() updateRolDto: UpdateRolDto) {
-    return await this.rolsService.update(+id, updateRolDto);
+  async update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateRolDto: UpdateRolDto,
+  ) {
+    return await this.rolsService.update(id, updateRolDto);
   }
 
   @Delete(':id')
-  async remove(@Param('id') id: string) {
-    return await this.rolsService.remove(+id);
+  async remove(@Param('id', ParseIntPipe) id: number) {
+    return await this.rolsService.remove(id);
   }
 }

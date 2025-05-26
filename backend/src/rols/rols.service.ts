@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { CreateRolDto } from './dto/create-rol.dto';
 import { UpdateRolDto } from './dto/update-rol.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -23,13 +27,20 @@ export class RolsService {
   async findOne(id: number) {
     try {
       const rol = await this.prisma.rol.findUnique({ where: { id } });
+
+      if (!rol) {
+        throw new NotFoundException(`Rol con ID ${id} no encontrado`);
+      }
+
       return plainToInstance(Rol, rol);
     } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        if (error.code === 'P2025') {
-          throw new NotFoundException(`Rol con ID ${id} no encontrado`);
-        }
+      if (error instanceof NotFoundException) {
+        throw error;
       }
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        throw new InternalServerErrorException('Error en la base de datos');
+      }
+
       throw error;
     }
   }
