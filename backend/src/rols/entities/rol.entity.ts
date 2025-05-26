@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
 
-export class Rol {
+export class RolResponseEntity {
   @Expose()
   @ApiProperty()
   id: number;
@@ -14,7 +14,7 @@ export class Rol {
   @ApiProperty()
   descripcion: string;
 
-  constructor(partial: Partial<Rol>) {
+  constructor(partial: Partial<RolResponseEntity>) {
     Object.assign(this, partial);
   }
 }

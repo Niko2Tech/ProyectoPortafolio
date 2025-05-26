@@ -8,6 +8,8 @@ import { CreateSubcategoryDto } from './dto/create-subcategory.dto';
 import { UpdateSubcategoryDto } from './dto/update-subcategory.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Prisma } from '@prisma/client';
+import { plainToInstance } from 'class-transformer';
+import { SubcategoriaResponseEntity } from './entities/subcategory.entity';
 
 @Injectable()
 export class SubcategoriesService {
@@ -18,7 +20,7 @@ export class SubcategoriesService {
       const subcategoria = await this.prisma.subcategoriaProducto.create({
         data: createSubcategoryDto,
       });
-      return subcategoria;
+      return plainToInstance(SubcategoriaResponseEntity, subcategoria);
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         if (error.code === 'P2003') {
@@ -39,7 +41,7 @@ export class SubcategoriesService {
         categoria: true,
       },
     });
-    return subcategorias;
+    return plainToInstance(SubcategoriaResponseEntity, subcategorias);
   }
 
   async findOne(id: number) {
@@ -53,7 +55,7 @@ export class SubcategoriesService {
         throw new NotFoundException(`Subcategoría con ID ${id} no encontrada`);
       }
 
-      return subcategoria;
+      return plainToInstance(SubcategoriaResponseEntity, subcategoria);
     } catch (error) {
       if (error instanceof NotFoundException) {
         throw error;
@@ -70,7 +72,7 @@ export class SubcategoriesService {
         data: updateSubcategoryDto,
       });
 
-      return subcategoria;
+      return plainToInstance(SubcategoriaResponseEntity, subcategoria);
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         if (error.code === 'P2025') {

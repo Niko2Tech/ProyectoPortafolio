@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Exclude, Expose, Type } from 'class-transformer';
-import { Category } from '../../categories/entities/category.entity';
+import { CategoryResponseEntity } from '../../categories/entities/category.entity';
 
 @Exclude()
 export class SubcategoriaResponseEntity {
@@ -21,9 +21,9 @@ export class SubcategoriaResponseEntity {
   descripcion?: string;
 
   @Expose()
-  @ApiProperty({ type: () => Category })
-  @Type(() => Category)
-  categoria?: Category;
+  @ApiProperty({ type: () => CategoryResponseEntity })
+  @Type(() => CategoryResponseEntity)
+  categoria?: CategoryResponseEntity;
 
   constructor(partial: Partial<SubcategoriaResponseEntity>) {
     Object.assign(this, partial);

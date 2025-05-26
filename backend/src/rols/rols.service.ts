@@ -6,7 +6,7 @@ import {
 import { CreateRolDto } from './dto/create-rol.dto';
 import { UpdateRolDto } from './dto/update-rol.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { Rol } from './entities/rol.entity';
+import { RolResponseEntity } from './entities/rol.entity';
 import { plainToInstance } from 'class-transformer';
 import { Prisma } from '@prisma/client';
 
@@ -16,12 +16,12 @@ export class RolsService {
 
   async create(createRolDto: CreateRolDto) {
     const rol = await this.prisma.rol.create({ data: createRolDto });
-    return plainToInstance(Rol, rol);
+    return plainToInstance(RolResponseEntity, rol);
   }
 
   async findAll() {
     const roles = await this.prisma.rol.findMany();
-    return plainToInstance(Rol, roles);
+    return plainToInstance(RolResponseEntity, roles);
   }
 
   async findOne(id: number) {
@@ -32,7 +32,7 @@ export class RolsService {
         throw new NotFoundException(`Rol con ID ${id} no encontrado`);
       }
 
-      return plainToInstance(Rol, rol);
+      return plainToInstance(RolResponseEntity, rol);
     } catch (error) {
       if (error instanceof NotFoundException) {
         throw error;
@@ -51,7 +51,7 @@ export class RolsService {
         where: { id },
         data: updateRolDto,
       });
-      return plainToInstance(Rol, rol);
+      return plainToInstance(RolResponseEntity, rol);
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         if (error.code === 'P2025') {
@@ -65,7 +65,7 @@ export class RolsService {
   async remove(id: number) {
     try {
       const rol = await this.prisma.rol.delete({ where: { id } });
-      return plainToInstance(Rol, rol);
+      return rol;
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         if (error.code === 'P2025') {

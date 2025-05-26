@@ -7,6 +7,8 @@ import { CreateBrandDto } from './dto/create-brand.dto';
 import { UpdateBrandDto } from './dto/update-brand.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Prisma } from '@prisma/client';
+import { plainToInstance } from 'class-transformer';
+import { BrandResponseEntity } from './entities/brand.entity';
 
 @Injectable()
 export class BrandsService {
@@ -16,11 +18,12 @@ export class BrandsService {
     const brand = await this.prisma.marca.create({
       data: createBrandDto,
     });
-    return brand;
+    return plainToInstance(BrandResponseEntity, brand);
   }
 
   async findAll() {
-    return this.prisma.marca.findMany();
+    const brands = await this.prisma.marca.findMany();
+    return plainToInstance(BrandResponseEntity, brands);
   }
 
   async findOne(id: number) {
@@ -33,7 +36,7 @@ export class BrandsService {
         throw new NotFoundException(`Marca con ID ${id} no encontrada`);
       }
 
-      return brand;
+      return plainToInstance(BrandResponseEntity, brand);
     } catch (error) {
       if (error instanceof NotFoundException) {
         throw error;
@@ -52,7 +55,7 @@ export class BrandsService {
         where: { id },
         data: updateBrandDto,
       });
-      return brand;
+      return plainToInstance(BrandResponseEntity, brand);
     } catch (error) {
       if (
         error instanceof Prisma.PrismaClientKnownRequestError &&

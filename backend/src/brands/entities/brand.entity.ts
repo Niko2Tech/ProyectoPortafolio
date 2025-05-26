@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class Brand {
+export class BrandResponseEntity {
   @ApiProperty({ description: 'ID numérico de la marca' })
   id: number;
 
@@ -13,7 +13,7 @@ export class Brand {
   })
   descripcion?: string;
 
-  constructor(partial: Partial<Brand>) {
+  constructor(partial: Partial<BrandResponseEntity>) {
     Object.assign(this, partial);
   }
 }

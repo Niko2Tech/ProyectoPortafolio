@@ -7,6 +7,8 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
+import { plainToInstance } from 'class-transformer';
+import { CategoryResponseEntity } from './entities/category.entity';
 
 @Injectable()
 export class CategoriesService {
@@ -16,12 +18,12 @@ export class CategoriesService {
     const category = await this.prisma.categoriaProducto.create({
       data: createCategoryDto,
     });
-    return category;
+    return plainToInstance(CategoryResponseEntity, category);
   }
 
   async findAll() {
     const categories = await this.prisma.categoriaProducto.findMany();
-    return categories;
+    return plainToInstance(CategoryResponseEntity, categories);
   }
 
   async findOne(id: number) {
@@ -34,7 +36,7 @@ export class CategoriesService {
         throw new NotFoundException(`Categoria con ID ${id} no encontrado`);
       }
 
-      return category;
+      return plainToInstance(CategoryResponseEntity, category);
     } catch (error) {
       if (error instanceof NotFoundException) {
         throw error;
@@ -53,7 +55,7 @@ export class CategoriesService {
         where: { id },
         data: updateCategoryDto,
       });
-      return category;
+      return plainToInstance(CategoryResponseEntity, category);
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         if (error.code === 'P2025') {
