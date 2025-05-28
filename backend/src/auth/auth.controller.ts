@@ -1,9 +1,19 @@
-import { Controller, Post, Body, Res, HttpCode } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Res,
+  HttpCode,
+  Get,
+  Req,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { AuthResponseDto } from './entities/auth-response.entity';
 import { Response } from 'express';
-import { ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiResponse, ApiTags, ApiCookieAuth } from '@nestjs/swagger';
+import { RequestWithCookies } from './types/cookie.type';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -43,5 +53,27 @@ export class AuthController {
       sameSite: 'strict',
     });
     return { message: 'Sesión cerrada exitosamente' };
+  }
+
+  @Get('verify')
+  @HttpCode(200)
+  @ApiCookieAuth('access_token')
+  @ApiResponse({
+    status: 200,
+    description: 'Token válido',
+    type: AuthResponseDto,
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Token inválido o no proporcionado',
+  })
+  async verify(@Req() req: RequestWithCookies) {
+    const token = req.cookies?.access_token;
+
+    if (!token) {
+      throw new UnauthorizedException('Token no proporcionado');
+    }
+    const result = await this.authService.verifyToken(token);
+    return result;
   }
 }
