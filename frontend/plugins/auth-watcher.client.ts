@@ -13,12 +13,9 @@ export default defineNuxtPlugin(() => {
 
         const publicRoutes = ['/login', '/']
         if (userStore.isAuthenticated && !publicRoutes.includes(route.path)) {
-          console.log('🔍 Verificación periódica de token...')
-
           try {
             await userStore.forceVerify()
           } catch (error) {
-            console.log('🚨 Token expirado durante verificación periódica')
             userStore.clearUsuario()
             await navigateTo('/login')
           }
@@ -49,12 +46,9 @@ export default defineNuxtPlugin(() => {
 
     const publicRoutes = ['/login', '/']
     if (userStore.isAuthenticated && !publicRoutes.includes(route.path)) {
-      console.log('🔍 Verificación por foco de ventana...')
-
       try {
         await userStore.forceVerify()
       } catch (error) {
-        console.log('🚨 Token expirado al recuperar foco')
         userStore.clearUsuario()
         await navigateTo('/login')
       }
