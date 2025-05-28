@@ -1,17 +1,16 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  modules: ['@nuxt/eslint', '@nuxtjs/tailwindcss'],
+  compatibilityDate: '2025-05-15',
   devtools: { enabled: true },
-  compatibilityDate: '2024-11-01',
-  eslint: {
-    config: {
-      stylistic: true,
+  modules: ['@nuxt/eslint', '@nuxt/icon', '@nuxtjs/tailwindcss', '@pinia/nuxt'],
+  css: ['~/assets/css/main.css'],
+  typescript: {
+    strict: true,
+    typeCheck: true,
+  },
+  runtimeConfig: {
+    public: {
+      apiBaseUrl: process.env.NUXT_PUBLIC_API_BASE_URL || 'http://localhost:8000/api',
     },
-  },
-  vite: {
-    optimizeDeps: { include: ['@fontsource-variable/nunito'] },
-  },
-  tailwindcss: {
-    cssPath: '~/assets/css/tailwind.css',
   },
 })
