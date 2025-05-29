@@ -67,15 +67,17 @@ export const useUserStore = defineStore('user', {
 
         this.setUsuario(response)
         return response
-      } catch (err) {
+      } catch (err: any) {
         this.clearUsuario()
-        console.error('Login error:', err)
-        throw new Error('Credenciales inválidas o error de autenticación')
+
+        if (err.response?.status === 401) {
+          throw new Error('Credenciales incorrectas. Verifica tu email y contraseña.')
+        }
+        throw new Error('Error del servidor. Intenta más tarde o contacta soporte.')
       } finally {
         this.isLoading = false
       }
     },
-
     async logout() {
       this.isLoading = true
       try {
