@@ -113,17 +113,15 @@ const viewPasswordToggle = () => {
 }
 
 const handleLogin = async () => {
-  await userStore.login({
-    email: email.value,
-    password: password.value,
-  })
-  if (userStore.usuario === null) {
-    errorMessage.value =
-      'Credenciales incorrectas. Por favor, verifica tu correo electrónico y contraseña.'
-  } else {
+  try {
+    await userStore.login({
+      email: email.value,
+      password: password.value,
+    })
     errorMessage.value = ''
-    // Redirigir a la página de inicio o dashboard
-    navigateTo('/home')
+    navigateTo('/dashboard')
+  } catch (error: any) {
+    errorMessage.value = error.message || 'Error al iniciar sesión'
   }
 }
 </script>
