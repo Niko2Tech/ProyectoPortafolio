@@ -8,8 +8,6 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Prisma } from '@prisma/client';
-import { plainToInstance } from 'class-transformer';
-import { ProductResponseEntity } from './entities/product.entity';
 
 @Injectable()
 export class ProductsService {
@@ -21,7 +19,7 @@ export class ProductsService {
         data: createProductDto,
       });
 
-      return plainToInstance(ProductResponseEntity, producto);
+      return producto;
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         // SKU único
@@ -39,7 +37,7 @@ export class ProductsService {
 
   async findAll() {
     const productos = await this.prisma.producto.findMany();
-    return plainToInstance(ProductResponseEntity, productos);
+    return productos;
   }
 
   async findOne(id: string) {
@@ -52,7 +50,7 @@ export class ProductsService {
         throw new NotFoundException(`Producto con ID ${id} no encontrado`);
       }
 
-      return plainToInstance(ProductResponseEntity, producto);
+      return producto;
     } catch (error) {
       if (error instanceof NotFoundException) throw error;
       throw new InternalServerErrorException('Error al buscar el producto');
@@ -66,7 +64,7 @@ export class ProductsService {
         data: updateProductDto,
       });
 
-      return plainToInstance(ProductResponseEntity, producto);
+      return producto;
     } catch (error) {
       if (
         error instanceof Prisma.PrismaClientKnownRequestError &&
