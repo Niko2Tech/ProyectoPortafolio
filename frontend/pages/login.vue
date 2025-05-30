@@ -1,7 +1,7 @@
 <template>
   <main class="flex w-full h-screen items-center justify-center">
     <section class="card bg-base-100 w-96 shadow-sm p-6">
-      <h2 class="text-4xl font-bold text-center mb-4">Iniciar sesión</h2>
+      <img src="/img/logo_texto.webp" />
       <form class="space-y-4" @submit.prevent="handleLogin">
         <!-- Email con ícono -->
         <div class="form-control">
