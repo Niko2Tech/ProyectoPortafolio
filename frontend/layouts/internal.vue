@@ -53,15 +53,15 @@ watchEffect(() => {
               <transition name="fade-slide">
                 <ul v-show="inventarioAbierto" class="mt-1">
                   <li>
-                    <NuxtLink to="/inventario/crear">
-                      <Icon name="material-symbols:add-box-outline-rounded" />
-                      Crear producto
-                    </NuxtLink>
-                  </li>
-                  <li>
                     <NuxtLink to="/inventario/buscar">
                       <Icon name="mdi:magnify" />
                       Buscar producto
+                    </NuxtLink>
+                  </li>
+                  <li>
+                    <NuxtLink to="/inventario/crear">
+                      <Icon name="material-symbols:add-box-outline-rounded" />
+                      Crear producto
                     </NuxtLink>
                   </li>
                   <li>
