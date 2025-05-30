@@ -1,85 +1,57 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Exclude, Expose } from 'class-transformer';
 
-@Exclude()
-export class ProductResponseEntity {
-  @Expose()
+export class ProductEntity {
   @ApiProperty()
   id: string;
 
-  @Expose()
   @ApiProperty()
   sku: string;
 
-  @Expose()
-  @ApiProperty({ required: false })
-  codigoBarras?: string;
-
-  @Expose()
   @ApiProperty()
   nombre: string;
 
-  @Expose()
-  @ApiProperty({ required: false })
-  descripcion?: string;
-
-  @Expose()
   @ApiProperty()
-  precioNeto: number;
+  descripcion: string;
 
-  @Expose()
   @ApiProperty()
-  iva: number;
+  precioNeto: string;
 
-  @Expose()
   @ApiProperty()
-  precioVenta: number;
+  iva: string;
 
-  @Expose()
   @ApiProperty()
-  costoNeto: number;
+  precioVenta: string;
 
-  @Expose()
+  @ApiProperty()
+  costoNeto: string;
+
   @ApiProperty()
   stockActual: number;
 
-  @Expose()
   @ApiProperty()
   stockMinimo: number;
 
-  @Expose()
-  @ApiProperty({ required: false })
-  unidadMedida?: string;
-
-  @Expose()
   @ApiProperty()
-  categoriaId: number;
+  unidadMedida: string;
 
-  @Expose()
-  @ApiProperty({ required: false })
-  subcategoriaId?: number;
-
-  @Expose()
-  @ApiProperty({ required: false })
-  marcaId?: number;
-
-  @Expose()
-  @ApiProperty({ required: false })
-  proveedorId?: string;
-
-  @Expose()
   @ApiProperty()
   afectoIva: boolean;
 
-  @Expose()
   @ApiProperty()
-  createdAt: Date;
+  createdAt: string;
 
-  @Expose()
   @ApiProperty()
-  updatedAt: Date;
+  updatedAt: string;
 
-  constructor(partial: Partial<ProductResponseEntity>) {
-    Object.assign(this, partial);
-  }
+  @ApiProperty()
+  marca: { nombre: string };
+
+  @ApiProperty()
+  categoria: { nombre: string };
+
+  @ApiProperty()
+  subcategoria: { nombre: string };
+
+  @ApiProperty()
+  proveedor: { nombreFantasia: string };
 }
