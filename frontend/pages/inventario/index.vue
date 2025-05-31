@@ -166,9 +166,12 @@ const paginationRange = computed(() => {
               <th>Nombre</th>
               <th>SKU</th>
               <th>Precio</th>
+              <th>Stock actual</th>
+              <th>Stock minimo</th>
               <th>Marca</th>
               <th>Categoría</th>
               <th>Proveedor</th>
+              <th>Acciones</th>
             </tr>
           </thead>
           <tbody>
@@ -180,6 +183,19 @@ const paginationRange = computed(() => {
               <td>{{ producto.nombre }}</td>
               <td>{{ producto.sku }}</td>
               <td>{{ formatChileanCurrency(Number(producto.precioVenta)) }}</td>
+              <td
+                :class="{
+                  'text-error': producto.stockActual === 0,
+                  'text-warning':
+                    producto.stockActual > 0 && producto.stockActual < producto.stockMinimo,
+                  'text-success': producto.stockActual >= producto.stockMinimo,
+                }"
+              >
+                {{ producto.stockActual }}
+              </td>
+              <td>
+                {{ producto.stockMinimo }}
+              </td>
               <td>{{ producto.marca.nombre }}</td>
               <td>{{ producto.categoria.nombre }}</td>
               <td>{{ producto.proveedor.nombreFantasia }}</td>

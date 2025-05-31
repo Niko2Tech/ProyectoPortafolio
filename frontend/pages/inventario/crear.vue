@@ -4,5 +4,9 @@ definePageMeta({
 })
 </script>
 <template>
-  <h2>Crear producto</h2>
+  <section class="md:p-4 p-1">
+    <article class="bg-base-100 shadow-md p-4 rounded-lg">
+      <h1 class="text-2xl font-semibold mb-6">Crear Producto</h1>
+    </article>
+  </section>
 </template>

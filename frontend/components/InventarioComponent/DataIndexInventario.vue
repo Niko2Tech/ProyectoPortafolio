@@ -7,6 +7,15 @@ const ultimasVentas = ref(0)
 const costoVentas = ref(0)
 const productosBajoStock = ref(0)
 const productosSinStock = ref(0)
+
+const { data } = await useApiComponent('/products/resumen')
+numCategorias.value = data.value?.numCategorias || 0
+totalProductos.value = data.value?.totalProductos || 0
+totalValorProductos.value = data.value?.totalValorProductos || 0
+ultimasVentas.value = data.value?.ultimasVentas || 0
+costoVentas.value = data.value?.costoVentas || 0
+productosBajoStock.value = data.value?.productosBajoStock || 0
+productosSinStock.value = data.value?.productosSinStock || 0
 </script>
 <template>
   <h2 class="text-2xl font-semibold mb-6">Revisión de Inventario</h2>
@@ -18,7 +27,7 @@ const productosSinStock = ref(0)
         <div class="flex justify-between items-center">
           <div>
             <p class="text-2xl font-bold">{{ numCategorias }}</p>
-            <p class="text-sm text-gray-500">Últimos 7 días</p>
+            <p class="text-sm text-gray-500">Total de categorias</p>
           </div>
         </div>
       </div>
@@ -31,13 +40,13 @@ const productosSinStock = ref(0)
         <div class="flex justify-between items-center">
           <div>
             <p class="text-2xl font-bold">{{ totalProductos }}</p>
-            <p class="text-sm text-gray-500">Últimos 7 días</p>
+            <p class="text-sm text-gray-500">Total de productos</p>
           </div>
           <div>
             <p class="text-xl font-semibold mt-2">
               {{ formatChileanCurrency(totalValorProductos) }}
             </p>
-            <p class="text-sm text-gray-500">Valor inventario</p>
+            <p class="text-sm text-gray-500">Valor total neto</p>
           </div>
         </div>
       </div>
@@ -69,7 +78,7 @@ const productosSinStock = ref(0)
         <div class="flex justify-between items-center">
           <div>
             <p class="text-2xl font-bold">{{ productosBajoStock }}</p>
-            <p class="text-sm text-gray-500">Ordenados</p>
+            <p class="text-sm text-gray-500">Productos bajo stock</p>
           </div>
           <div>
             <p class="text-xl font-semibold mt-2">

@@ -34,12 +34,18 @@ export class ProductsController {
   @Get()
   @ApiQuery({ name: 'page', required: false, type: Number, example: 1 })
   @ApiQuery({ name: 'limit', required: false, type: Number, example: 10 })
+  @ApiQuery({ name: 'search', required: false, type: String, example: '' })
   @ApiOkResponse({
     type: PaginatedProductDto,
     description: 'Lista paginada de productos',
   })
   findAll(@Query() query: ProductQueryDto) {
     return this.productsService.findAll(query);
+  }
+
+  @Get('resumen')
+  findResume() {
+    return this.productsService.getResumenInventario();
   }
 
   @Get(':id')
