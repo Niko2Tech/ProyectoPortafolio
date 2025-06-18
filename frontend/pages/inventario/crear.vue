@@ -21,10 +21,8 @@ const producto = ref({
   codigoBarras: '',
   nombre: '',
   descripcion: '',
-  precioNeto: 0,
-  iva: 0,
-  precioVenta: 0,
   costoNeto: 0,
+  precioVenta: 0,
   stockActual: 0,
   stockMinimo: 0,
   unidadMedida: '',
@@ -33,7 +31,23 @@ const producto = ref({
   marcaId: 0,
   proveedorId: '',
   afectoIva: true,
+  activo: true,
 })
+
+const generarSku = () => {
+  const nombre = producto.value.nombre?.substring(0, 3).toUpperCase() || 'XXX'
+  const marca =
+    marcaList.value
+      .find((m) => m.id === producto.value.marcaId)
+      ?.nombre?.substring(0, 3)
+      .toUpperCase() || 'XXX'
+  const ultimosCodigo = producto.value.codigoBarras?.slice(-4) || '0000'
+
+  // Generar un ID único corto (4 caracteres del UUID v4)
+  const idUnico = crypto.randomUUID().split('-')[0].slice(0, 6).toUpperCase()
+
+  producto.value.sku = `${nombre}-${marca}-${ultimosCodigo}-${idUnico}`
+}
 
 onMounted(async () => {
   const [marcas, proveedores, categorias, subcategorias] = await Promise.all([
@@ -47,6 +61,10 @@ onMounted(async () => {
   proveedorList.value = proveedores
   categoriaList.value = categorias
   subcategoriaList.value = subcategorias
+})
+
+const subcategoriasFiltradas = computed(() => {
+  return subcategoriaList.value.filter((sub) => sub.categoriaId === producto.value.categoriaId)
 })
 
 const handleSubmit = async (event: Event) => {
@@ -66,10 +84,8 @@ const handleSubmit = async (event: Event) => {
       codigoBarras: '',
       nombre: '',
       descripcion: '',
-      precioNeto: 0,
-      iva: 0,
-      precioVenta: 0,
       costoNeto: 0,
+      precioVenta: 0,
       stockActual: 0,
       stockMinimo: 0,
       unidadMedida: '',
@@ -78,6 +94,7 @@ const handleSubmit = async (event: Event) => {
       marcaId: 0,
       proveedorId: '',
       afectoIva: true,
+      activo: true,
     }
   } catch (error: any) {
     console.error('Error al crear producto:', error)
@@ -85,6 +102,15 @@ const handleSubmit = async (event: Event) => {
     messageSuccess.value = ''
   }
 }
+
+watch(
+  () => [producto.value.codigoBarras, producto.value.nombre, producto.value.marcaId],
+  () => {
+    if (producto.value.codigoBarras && producto.value.nombre && producto.value.marcaId) {
+      generarSku()
+    }
+  }
+)
 </script>
 
 <template>
@@ -100,8 +126,8 @@ const handleSubmit = async (event: Event) => {
       <form @submit="handleSubmit" class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <!-- SKU -->
         <label class="form-control w-full floating-label">
-          <span>SKU</span>
-          <input v-model="producto.sku" type="text" class="input input-bordered w-full" required />
+          <span>SKU (autogenerado)</span>
+          <input v-model="producto.sku" type="text" class="input input-bordered w-full" readonly />
         </label>
 
         <!-- Código de barras -->
@@ -127,21 +153,14 @@ const handleSubmit = async (event: Event) => {
           <input v-model="producto.descripcion" type="text" class="input input-bordered w-full" />
         </label>
 
-        <!-- Precio neto -->
+        <!-- Costo neto -->
         <label class="form-control w-full floating-label">
-          <span>Precio neto</span>
+          <span>Costo neto</span>
           <input
-            v-model.number="producto.precioNeto"
+            v-model.number="producto.costoNeto"
             type="number"
             class="input input-bordered w-full"
-            required
           />
-        </label>
-
-        <!-- IVA -->
-        <label class="form-control w-full floating-label">
-          <span>IVA</span>
-          <input v-model.number="producto.iva" type="number" class="input input-bordered w-full" />
         </label>
 
         <!-- Precio venta -->
@@ -152,16 +171,6 @@ const handleSubmit = async (event: Event) => {
             type="number"
             class="input input-bordered w-full"
             required
-          />
-        </label>
-
-        <!-- Costo neto -->
-        <label class="form-control w-full floating-label">
-          <span>Costo neto</span>
-          <input
-            v-model.number="producto.costoNeto"
-            type="number"
-            class="input input-bordered w-full"
           />
         </label>
 
@@ -177,7 +186,7 @@ const handleSubmit = async (event: Event) => {
 
         <!-- Stock mínimo -->
         <label class="form-control w-full floating-label">
-          <span>Stock mínimo</span>
+          <span>Stock de alerta</span>
           <input
             v-model.number="producto.stockMinimo"
             type="number"
@@ -205,14 +214,18 @@ const handleSubmit = async (event: Event) => {
         <!-- Subcategoría -->
         <label class="form-control w-full floating-label">
           <span>Subcategoría</span>
-          <select v-model="producto.subcategoriaId" class="select select-bordered w-full" required>
+          <select
+            v-model="producto.subcategoriaId"
+            :disabled="!producto.categoriaId"
+            class="select select-bordered w-full"
+            required
+          >
             <option disabled value="">Seleccione subcategoría</option>
-            <option v-for="sub in subcategoriaList" :key="sub.id" :value="sub.id">
+            <option v-for="sub in subcategoriasFiltradas" :key="sub.id" :value="sub.id">
               {{ sub.nombre }}
             </option>
           </select>
         </label>
-
         <!-- Marca -->
         <label class="form-control w-full floating-label">
           <span>Marca</span>

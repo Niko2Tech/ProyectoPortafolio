@@ -4,5 +4,5 @@ definePageMeta({
 })
 </script>
 <template>
-  <h2>Crear producto</h2>
+  <h1>Editar producto</h1>
 </template>

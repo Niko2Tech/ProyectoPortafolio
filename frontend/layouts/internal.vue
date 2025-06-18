@@ -4,14 +4,14 @@ import { useRoute } from 'vue-router'
 
 const sidebarMenu = ref(true)
 const route = useRoute()
-const inventarioAbierto = ref(false)
+const menuAbierto = ref('')
 
 const toggleSidebar = () => {
   sidebarMenu.value = !sidebarMenu.value
 }
 
 watchEffect(() => {
-  inventarioAbierto.value = route.path.startsWith('/inventario')
+  menuAbierto.value = route.path.split('/')[1] || ''
 })
 </script>
 
@@ -42,36 +42,61 @@ watchEffect(() => {
 
             <!-- Menú desplegable de Inventario -->
             <li>
-              <NuxtLink
-                to="/inventario"
-                class="flex items-center gap-2 w-full"
-                @click="inventarioAbierto = !inventarioAbierto"
-              >
+              <NuxtLink to="/inventario" class="flex items-center gap-2 w-full">
                 <Icon name="mingcute:inventory-line" />
                 <span>Inventario</span>
               </NuxtLink>
               <transition name="fade-slide">
-                <ul v-show="inventarioAbierto" class="mt-1">
+                <ul v-show="menuAbierto == 'inventario'" class="mt-1">
                   <li>
                     <NuxtLink to="/inventario/crear">
-                      <Icon name="material-symbols:add-box-outline-rounded" />
+                      <Icon name="mdi:invoice-text-new-outline" />
                       Crear producto
                     </NuxtLink>
                   </li>
                   <li>
                     <NuxtLink to="/inventario/editar">
-                      <Icon name="material-symbols:edit-outline" />
+                      <Icon name="mdi:edit-outline" />
                       Editar producto
                     </NuxtLink>
                   </li>
                 </ul>
               </transition>
             </li>
+
             <li>
               <NuxtLink to="/proveedor">
                 <Icon name="material-symbols:store" />
                 Proveedores
               </NuxtLink>
+              <transition name="fade-slide">
+                <ul v-show="menuAbierto == 'proveedor'" class="mt-1">
+                  <li>
+                    <NuxtLink to="/proveedor/crear">
+                      <Icon name="mdi:plus" />
+                      Crear proveedor
+                    </NuxtLink>
+                  </li>
+                  <li>
+                    <NuxtLink to="/proveedor/editar">
+                      <Icon name="mdi:edit-outline" />
+                      Editar proveedor
+                    </NuxtLink>
+                  </li>
+                  <li>
+                    <NuxtLink to="/proveedor/ingresarCompra">
+                      <Icon name="mdi:invoice-text-new-outline" />
+                      Ingresar compra
+                    </NuxtLink>
+                  </li>
+                  <li>
+                    <NuxtLink to="/proveedor/editarCompra">
+                      <Icon name="mdi:edit-outline" />
+                      Editar compra
+                    </NuxtLink>
+                  </li>
+                </ul>
+              </transition>
             </li>
           </ul>
         </nav>
