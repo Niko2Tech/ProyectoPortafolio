@@ -33,18 +33,6 @@ export class SupplierResponseEntity {
 
   @Expose()
   @ApiProperty({ required: false })
-  comuna?: string;
-
-  @Expose()
-  @ApiProperty({ required: false })
-  ciudad?: string;
-
-  @Expose()
-  @ApiProperty({ required: false })
-  region?: string;
-
-  @Expose()
-  @ApiProperty({ required: false })
   giro?: string;
 
   @Expose()

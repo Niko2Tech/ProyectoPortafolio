@@ -20,9 +20,10 @@ export class CreateProductDto {
     description: 'Código de barras del producto',
     required: false,
   })
-  @IsOptional()
+  @ApiProperty({ description: 'SKU único del producto' })
+  @IsNotEmpty({ message: 'El SKU es obligatorio' })
   @IsString()
-  codigoBarras?: string;
+  codigoBarras: string;
 
   @ApiProperty({ description: 'Nombre del producto' })
   @IsNotEmpty({ message: 'El nombre es obligatorio' })
@@ -47,17 +48,6 @@ export class CreateProductDto {
     throw new Error('El valor debe ser un número o string válido');
   })
   precioNeto: number;
-
-  @ApiProperty({ description: 'IVA del producto' })
-  @IsNotEmpty()
-  @IsNumber({ maxDecimalPlaces: 2 })
-  @Transform(({ value }) => {
-    if (typeof value === 'string' || typeof value === 'number') {
-      return parseFloat(value.toString());
-    }
-    throw new Error('El valor debe ser un número o string válido');
-  })
-  iva: number;
 
   @ApiProperty({ description: 'Precio de venta del producto' })
   @IsNotEmpty()

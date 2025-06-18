@@ -7,6 +7,17 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// Tabla de configuración de IVA
+model ConfiguracionIva {
+  id            Int      @id @default(autoincrement())
+  tasaIva       Decimal  @map("tasa_iva") @db.Decimal(5, 2) // Ej: 19.00 para 19%
+  fechaVigencia DateTime @map("fecha_vigencia") @db.Date
+  activo        Boolean  @default(true)
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  @@map("configuracion_iva")
+}
+
 model Usuario {
   id        String   @id @default(uuid()) @db.Uuid
   nombre    String   @db.VarChar(100)
@@ -47,10 +58,7 @@ model Cliente {
   razonSocial        String?     @map("razon_social") @db.VarChar(150)
   email              String?     @db.VarChar(100)
   telefono           String?     @db.VarChar(20)
-  direccion          String?     @db.Text
-  comuna             String?     @db.VarChar(50)
-  ciudad             String?     @db.VarChar(50)
-  region             String?     @db.VarChar(50)
+  direccion          String?     @db.Text // Dirección completa incluyendo comuna, ciudad y región
   rut                String      @unique @db.VarChar(12)
   giro               String?     @db.VarChar(100)
   exentoIva          Boolean     @default(false) @map("exento_iva")
@@ -74,21 +82,20 @@ enum TipoCliente {
 model Producto {
   id             String   @id @default(uuid()) @db.Uuid
   sku            String   @unique @db.VarChar(50)
-  codigoBarras   String?  @map("codigo_barras") @db.VarChar(50)
+  codigoBarras   String   @map("codigo_barras") @db.VarChar(50)
   nombre         String   @db.VarChar(100)
   descripcion    String?  @db.Text
-  precioNeto     Decimal  @map("precio_neto") @db.Decimal(10, 2)
-  iva            Decimal  @db.Decimal(10, 2)
-  precioVenta    Decimal  @map("precio_venta") @db.Decimal(10, 2)
-  costoNeto      Decimal  @map("costo_neto") @db.Decimal(10, 2)
-  stockActual    Int      @map("stock_actual")
-  stockMinimo    Int      @map("stock_minimo")
-  unidadMedida   String?  @map("unidad_medida") @db.VarChar(20)
+  costoNeto      Decimal  @map("costo_neto") @db.Decimal(10, 2) // Precio de costo sin IVA
+  precioVenta    Decimal  @map("precio_venta") @db.Decimal(10, 2) // Precio de venta con IVA incluido
+  stockActual    Int      @default(0) @map("stock_actual")
+  stockMinimo    Int      @default(0) @map("stock_minimo")
+  unidadMedida   String   @default("unidad") @map("unidad_medida") @db.VarChar(20)
   categoriaId    Int      @map("categoria_id")
   subcategoriaId Int?     @map("subcategoria_id")
   marcaId        Int?     @map("marca_id")
   proveedorId    String?  @map("proveedor_id") @db.Uuid
   afectoIva      Boolean  @default(true) @map("afecto_iva")
+  activo         Boolean  @default(true)
   createdAt      DateTime @default(now()) @map("created_at")
   updatedAt      DateTime @updatedAt @map("updated_at")
 
@@ -119,7 +126,7 @@ model CategoriaProducto {
 model SubcategoriaProducto {
   id          Int     @id @default(autoincrement())
   categoriaId Int     @map("categoria_id")
-  nombre      String  @unique @db.VarChar(100)
+  nombre      String  @db.VarChar(100)
   descripcion String? @db.Text
 
   // Relaciones
@@ -148,10 +155,7 @@ model Proveedor {
   rut            String   @unique @db.VarChar(12)
   telefono       String?  @db.VarChar(20)
   email          String?  @db.VarChar(100)
-  direccion      String?  @db.Text
-  comuna         String?  @db.VarChar(50)
-  ciudad         String?  @db.VarChar(50)
-  region         String?  @db.VarChar(50)
+  direccion      String?  @db.Text // Dirección completa incluyendo comuna, ciudad y región
   giro           String?  @db.VarChar(100)
   createdAt      DateTime @default(now()) @map("created_at")
   updatedAt      DateTime @updatedAt @map("updated_at")
@@ -191,12 +195,13 @@ model DocumentoVenta {
   clienteId             String?              @map("cliente_id") @db.Uuid
   fechaEmision          DateTime             @map("fecha_emision")
   subtotalNeto          Decimal              @map("subtotal_neto") @db.Decimal(10, 2)
-  iva                   Decimal              @db.Decimal(10, 2)
+  montoIva              Decimal              @map("monto_iva") @db.Decimal(10, 2)
   total                 Decimal              @db.Decimal(10, 2)
   metodoPagoId          Int                  @map("metodo_pago_id")
-  estado                EstadoDocumentoVenta
+  estado                EstadoDocumentoVenta @default(emitida)
   documentoReferenciaId String?              @map("documento_referencia_id") @db.Uuid
   comentarios           String?              @db.Text
+  createdAt             DateTime             @default(now()) @map("created_at")
 
   // Relaciones
   usuario                 Usuario                 @relation(fields: [usuarioId], references: [id])
@@ -232,13 +237,9 @@ model DocumentoVentaDetalle {
   documentoId         String  @map("documento_id") @db.Uuid
   productoId          String  @map("producto_id") @db.Uuid
   cantidad            Decimal @db.Decimal(10, 2)
-  precioUnitarioNeto  Decimal @map("precio_unitario_neto") @db.Decimal(10, 2)
-  ivaUnitario         Decimal @map("iva_unitario") @db.Decimal(10, 2)
+  precioUnitario      Decimal @map("precio_unitario") @db.Decimal(10, 2) // Precio unitario con IVA
   descuentoPorcentaje Decimal @default(0) @map("descuento_porcentaje") @db.Decimal(5, 2)
-  descuentoMonto      Decimal @default(0) @map("descuento_monto") @db.Decimal(10, 2)
-  subtotalNeto        Decimal @map("subtotal_neto") @db.Decimal(10, 2)
-  ivaLinea            Decimal @map("iva_linea") @db.Decimal(10, 2)
-  totalLinea          Decimal @map("total_linea") @db.Decimal(10, 2)
+  totalLinea          Decimal @map("total_linea") @db.Decimal(10, 2) // Total de la línea con IVA
 
   // Relaciones
   documento DocumentoVenta @relation(fields: [documentoId], references: [id])
@@ -254,10 +255,10 @@ model Compra {
   proveedorId     String              @map("proveedor_id") @db.Uuid
   fechaEmision    DateTime            @map("fecha_emision")
   fechaRecepcion  DateTime?           @map("fecha_recepcion")
-  subtotalNeto    Decimal?            @map("subtotal_neto") @db.Decimal(10, 2)
-  iva             Decimal?            @db.Decimal(10, 2)
-  total           Decimal?            @db.Decimal(10, 2)
-  estado          EstadoCompra
+  subtotalNeto    Decimal             @map("subtotal_neto") @db.Decimal(10, 2)
+  montoIva        Decimal             @map("monto_iva") @db.Decimal(10, 2)
+  total           Decimal             @db.Decimal(10, 2)
+  estado          EstadoCompra        @default(pendiente)
   createdAt       DateTime            @default(now()) @map("created_at")
   updatedAt       DateTime            @updatedAt @map("updated_at")
 
@@ -287,15 +288,12 @@ enum EstadoCompra {
 }
 
 model CompraDetalle {
-  id                 String  @id @default(uuid()) @db.Uuid
-  compraId           String  @map("compra_id") @db.Uuid
-  productoId         String  @map("producto_id") @db.Uuid
-  cantidad           Decimal @db.Decimal(10, 2)
-  precioUnitarioNeto Decimal @map("precio_unitario_neto") @db.Decimal(10, 2)
-  ivaUnitario        Decimal @map("iva_unitario") @db.Decimal(10, 2)
-  subtotalNeto       Decimal @map("subtotal_neto") @db.Decimal(10, 2)
-  ivaLinea           Decimal @map("iva_linea") @db.Decimal(10, 2)
-  totalLinea         Decimal @map("total_linea") @db.Decimal(10, 2)
+  id            String  @id @default(uuid()) @db.Uuid
+  compraId      String  @map("compra_id") @db.Uuid
+  productoId    String  @map("producto_id") @db.Uuid
+  cantidad      Decimal @db.Decimal(10, 2)
+  costoUnitario Decimal @map("costo_unitario") @db.Decimal(10, 2)
+  totalLinea    Decimal @map("total_linea") @db.Decimal(10, 2)
 
   // Relaciones
   compra   Compra   @relation(fields: [compraId], references: [id])
@@ -322,7 +320,7 @@ model Gasto {
   proveedorId      String             @map("proveedor_id") @db.Uuid
   categoriaGastoId Int                @map("categoria_gasto_id")
   montoNeto        Decimal            @map("monto_neto") @db.Decimal(10, 2)
-  iva              Decimal            @db.Decimal(10, 2)
+  montoIva         Decimal            @map("monto_iva") @db.Decimal(10, 2)
   total            Decimal            @db.Decimal(10, 2)
   descripcion      String?            @db.Text
   gastoRecurrente  Boolean            @default(false) @map("gasto_recurrente")
@@ -383,7 +381,7 @@ model Caja {
   montoCierreTarjetas Decimal?   @map("monto_cierre_tarjetas") @db.Decimal(10, 2)
   montoCierreOtros    Decimal?   @map("monto_cierre_otros") @db.Decimal(10, 2)
   diferencia          Decimal?   @db.Decimal(10, 2)
-  estado              EstadoCaja
+  estado              EstadoCaja @default(abierta)
   comentario          String?    @db.Text
 
   // Relaciones

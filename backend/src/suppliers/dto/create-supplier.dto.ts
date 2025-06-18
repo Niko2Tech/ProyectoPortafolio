@@ -47,21 +47,6 @@ export class CreateSupplierDto {
   @IsString({ message: 'Debe ser un texto' })
   direccion?: string;
 
-  @ApiProperty({ description: 'Comuna del proveedor', required: false })
-  @IsOptional()
-  @IsString({ message: 'Debe ser un texto' })
-  comuna?: string;
-
-  @ApiProperty({ description: 'Ciudad del proveedor', required: false })
-  @IsOptional()
-  @IsString({ message: 'Debe ser un texto' })
-  ciudad?: string;
-
-  @ApiProperty({ description: 'Región del proveedor', required: false })
-  @IsOptional()
-  @IsString({ message: 'Debe ser un texto' })
-  region?: string;
-
   @ApiProperty({ description: 'Giro comercial del proveedor', required: false })
   @IsOptional()
   @IsString({ message: 'Debe ser un texto' })

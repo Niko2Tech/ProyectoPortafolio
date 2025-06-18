@@ -165,7 +165,7 @@ export class ProductsService {
     ]: [
       number,
       number,
-      { _sum: { precioNeto: Prisma.Decimal | null } },
+      { _sum: { costoNeto: Prisma.Decimal | null } },
       number,
       { _sum: { total: Prisma.Decimal | null } },
       number,
@@ -173,7 +173,7 @@ export class ProductsService {
       this.prisma.categoriaProducto.count(),
       this.prisma.producto.count(),
       this.prisma.producto.aggregate({
-        _sum: { precioNeto: true },
+        _sum: { costoNeto: true },
       }),
       this.prisma.documentoVenta.count({
         where: {
@@ -207,7 +207,7 @@ export class ProductsService {
     const productosBajoStock = productosBajoStockRow?.count ?? 0;
 
     const totalValorProductos = Number(
-      totalValorProductosAgg._sum.precioNeto ?? 0,
+      totalValorProductosAgg._sum.costoNeto ?? 0,
     );
     const costoVentas = Number(costoVentasAgg._sum.total ?? 0);
 
