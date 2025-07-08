@@ -8,8 +8,29 @@ export default defineNuxtRouteMiddleware(async (to) => {
   // Rutas públicas que no requieren autenticación
   const publicRoutes = ['/login', '/']
 
-  // Si estamos en una ruta pública, no hacer nada
+  // Si estamos en una ruta pública
   if (publicRoutes.includes(to.path)) {
+    // Si la ruta es el login, verificar si hay usuario autenticado
+    if (to.path === '/login') {
+      try {
+        // Verificar estado de autenticación
+        await user.verify()
+
+        // Si está autenticado, redirigir al dashboard
+        if (user.isAuthenticated) {
+          return navigateTo('/dashboard')
+        }
+
+        // Si no está autenticado, permitir continuar al login
+        return
+      } catch (error) {
+        // Si hay error en la verificación, limpiar datos y continuar al login
+        user.clearUsuario()
+        return
+      }
+    }
+
+    // Para otras rutas públicas (como '/'), no hacer nada
     return
   }
 
