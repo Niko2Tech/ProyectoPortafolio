@@ -58,7 +58,7 @@ onMounted(async () => {
   ])
 
   marcaList.value = marcas
-  proveedorList.value = proveedores
+  proveedorList.value = proveedores.data
   categoriaList.value = categorias
   subcategoriaList.value = subcategorias
 })

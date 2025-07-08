@@ -44,7 +44,7 @@ const visibleMeta = ref<PaginationMeta>({
 // Configuración de columnas para la tabla
 const columns = [
   { key: 'nombre', label: 'Nombre' },
-  { key: 'sku', label: 'SKU' },
+  { key: 'codigoBarras', label: 'Código de barras' },
   {
     key: 'precioVenta',
     label: 'Precio',
@@ -131,9 +131,6 @@ function handlePageChange(newPage: number) {
 
       <!-- Acciones de cada fila -->
       <template #actions="{ item }">
-        <button class="btn btn-sm btn-accent" @click="router.push(`/inventario/ver?id=${item.id}`)">
-          <Icon name="mdi:plus" />
-        </button>
         <button
           class="btn btn-sm btn-primary"
           @click="router.push(`/inventario/editar?id=${item.id}`)"

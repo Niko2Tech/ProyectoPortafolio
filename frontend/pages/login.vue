@@ -108,6 +108,19 @@ const errorMessage = ref('')
 const viewPassword = ref(false)
 const userStore = useUserStore()
 
+// Watchers para ocultar el mensaje de error cuando el usuario edite los campos
+watch(email, () => {
+  if (errorMessage.value) {
+    errorMessage.value = ''
+  }
+})
+
+watch(password, () => {
+  if (errorMessage.value) {
+    errorMessage.value = ''
+  }
+})
+
 const viewPasswordToggle = () => {
   viewPassword.value = !viewPassword.value
 }
