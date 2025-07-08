@@ -43,10 +43,10 @@ productosSinStock.value = data.value?.productosSinStock || 0
             <p class="text-sm text-gray-500">Total de productos</p>
           </div>
           <div>
-            <p class="text-xl font-semibold mt-2">
+            <p class="text-xl font-bold">
               {{ formatChileanCurrency(totalValorProductos) }}
             </p>
-            <p class="text-sm text-gray-500">Valor total neto</p>
+            <p class="text-sm text-gray-500">Valor total productos</p>
           </div>
         </div>
       </div>
@@ -62,7 +62,7 @@ productosSinStock.value = data.value?.productosSinStock || 0
             <p class="text-sm text-gray-500">Últimos 7 días</p>
           </div>
           <div>
-            <p class="text-xl font-semibold mt-2">
+            <p class="text-xl font-bold">
               {{ formatChileanCurrency(costoVentas) }}
             </p>
             <p class="text-sm text-gray-500">Costo total</p>
@@ -81,7 +81,7 @@ productosSinStock.value = data.value?.productosSinStock || 0
             <p class="text-sm text-gray-500">Productos bajo stock</p>
           </div>
           <div>
-            <p class="text-xl font-semibold mt-2">
+            <p class="text-xl font-bold">
               {{ productosSinStock }}
             </p>
             <p class="text-sm text-gray-500">Sin stock</p>
