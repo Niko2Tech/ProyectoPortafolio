@@ -6,10 +6,17 @@ export interface Suppliers {
   telefono: string
   email: string
   direccion: string
-  comuna: string
-  ciudad: string
-  region: string
   giro: string
   createdAt: string
   updatedAt: string
+  comuna: {
+    id: string
+    nombre: string
+    regionId: string
+    region: {
+      id: string
+      nombre: string
+      codigo: string
+    }
+  }
 }
