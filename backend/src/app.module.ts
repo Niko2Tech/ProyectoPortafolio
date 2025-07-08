@@ -10,6 +10,7 @@ import { BrandsModule } from './brands/brands.module';
 import { SuppliersModule } from './suppliers/suppliers.module';
 import { LoggerMiddleware } from './logger.middleware';
 import { NestModule, MiddlewareConsumer } from '@nestjs/common';
+import { CommunesModule } from './communes/communes.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { NestModule, MiddlewareConsumer } from '@nestjs/common';
     SubcategoriesModule,
     BrandsModule,
     SuppliersModule,
+    CommunesModule,
   ],
 })
 export class AppModule implements NestModule {
