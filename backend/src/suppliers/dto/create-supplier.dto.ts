@@ -4,6 +4,7 @@ import {
   IsOptional,
   IsString,
   Length,
+  IsNumber,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsRut } from 'src/utils/rut.util';
@@ -51,4 +52,9 @@ export class CreateSupplierDto {
   @IsOptional()
   @IsString({ message: 'Debe ser un texto' })
   giro?: string;
+
+  @ApiProperty({ description: 'ID de la comuna', required: false })
+  @IsOptional()
+  @IsNumber()
+  comunaId?: number;
 }

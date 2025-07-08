@@ -6,11 +6,13 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { SuppliersService } from './suppliers.service';
 import { CreateSupplierDto } from './dto/create-supplier.dto';
 import { UpdateSupplierDto } from './dto/update-supplier.dto';
-import { ApiTags, ApiCookieAuth } from '@nestjs/swagger';
+import { SupplierQueryDto } from './dto/supplier-query.dto';
+import { ApiTags, ApiCookieAuth, ApiQuery } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/jwt/jwt.guard';
 import { UseGuards } from '@nestjs/common';
 import { ParseUUIDPipe } from '@nestjs/common';
@@ -28,8 +30,11 @@ export class SuppliersController {
   }
 
   @Get()
-  findAll() {
-    return this.suppliersService.findAll();
+  @ApiQuery({ name: 'page', required: false, type: Number })
+  @ApiQuery({ name: 'limit', required: false, type: Number })
+  @ApiQuery({ name: 'search', required: false, type: String })
+  findAll(@Query() query: SupplierQueryDto) {
+    return this.suppliersService.findAll(query);
   }
 
   @Get(':id')

@@ -10,6 +10,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { Prisma } from '@prisma/client';
 import { plainToInstance } from 'class-transformer';
 import { SupplierResponseEntity } from './entities/supplier.entity';
+import { SupplierQueryDto } from './dto/supplier-query.dto';
 
 @Injectable()
 export class SuppliersService {
@@ -31,14 +32,67 @@ export class SuppliersService {
     }
   }
 
-  async findAll() {
-    const proveedores = await this.prisma.proveedor.findMany();
-    return plainToInstance(SupplierResponseEntity, proveedores);
+  async findAll(query: SupplierQueryDto) {
+    const { page = 1, limit = 10, search = '' } = query;
+    const skip = (page - 1) * limit;
+
+    const orConditions: Prisma.ProveedorWhereInput[] = [
+      { razonSocial: { contains: search, mode: Prisma.QueryMode.insensitive } },
+      {
+        nombreFantasia: {
+          contains: search,
+          mode: Prisma.QueryMode.insensitive,
+        },
+      },
+      { rut: { contains: search, mode: Prisma.QueryMode.insensitive } },
+      { email: { contains: search, mode: Prisma.QueryMode.insensitive } },
+      { telefono: { contains: search, mode: Prisma.QueryMode.insensitive } },
+      { direccion: { contains: search, mode: Prisma.QueryMode.insensitive } },
+      { giro: { contains: search, mode: Prisma.QueryMode.insensitive } },
+    ];
+
+    const where: Prisma.ProveedorWhereInput = search
+      ? { OR: orConditions }
+      : {};
+
+    const [data, total] = await this.prisma.$transaction([
+      this.prisma.proveedor.findMany({
+        where,
+        skip,
+        take: limit,
+        include: {
+          comuna: {
+            include: {
+              region: true,
+            },
+          },
+        },
+      }),
+      this.prisma.proveedor.count({ where }),
+    ]);
+
+    return {
+      data,
+      meta: {
+        totalItems: total,
+        itemCount: data.length,
+        itemsPerPage: limit,
+        totalPages: Math.ceil(total / limit),
+        currentPage: page,
+      },
+    };
   }
 
   async findOne(id: string) {
     try {
       const proveedor = await this.prisma.proveedor.findUnique({
+        include: {
+          comuna: {
+            include: {
+              region: true,
+            },
+          },
+        },
         where: { id },
       });
 
@@ -46,7 +100,7 @@ export class SuppliersService {
         throw new NotFoundException(`Proveedor con ID ${id} no encontrado`);
       }
 
-      return plainToInstance(SupplierResponseEntity, proveedor);
+      return proveedor;
     } catch (error) {
       if (error instanceof NotFoundException) {
         throw error;
