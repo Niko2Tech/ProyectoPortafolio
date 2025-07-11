@@ -11,6 +11,8 @@ import { SuppliersModule } from './suppliers/suppliers.module';
 import { LoggerMiddleware } from './logger.middleware';
 import { NestModule, MiddlewareConsumer } from '@nestjs/common';
 import { CommunesModule } from './communes/communes.module';
+import { InventoryModule } from './inventory/inventory.module';
+import { PurchaseModule } from './purchase/purchase.module';
 
 @Module({
   imports: [
@@ -24,6 +26,8 @@ import { CommunesModule } from './communes/communes.module';
     BrandsModule,
     SuppliersModule,
     CommunesModule,
+    InventoryModule,
+    PurchaseModule,
   ],
 })
 export class AppModule implements NestModule {
