@@ -20,8 +20,8 @@ export class CreateProductDto {
     description: 'Código de barras del producto',
     required: false,
   })
-  @ApiProperty({ description: 'SKU único del producto' })
-  @IsNotEmpty({ message: 'El SKU es obligatorio' })
+  @ApiProperty({ description: 'El código de barras es obligatorio' })
+  @IsNotEmpty({ message: 'El código de barras es obligatorio' })
   @IsString()
   codigoBarras: string;
 
