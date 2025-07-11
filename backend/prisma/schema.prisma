@@ -350,11 +350,9 @@ model InventarioMovimiento {
   id             String                   @id @default(uuid()) @db.Uuid
   productoId     String                   @map("producto_id") @db.Uuid
   tipoMovimiento TipoMovimientoInventario @map("tipo_movimiento")
-  cantidad       Decimal                  @db.Decimal(10, 2)
-  stockAnterior  Decimal                  @map("stock_anterior") @db.Decimal(10, 2)
-  stockNuevo     Decimal                  @map("stock_nuevo") @db.Decimal(10, 2)
-  origenId       String?                  @map("origen_id") @db.Uuid
-  origenTipo     String?                  @map("origen_tipo") @db.VarChar(50)
+  cantidad       Int                      @map("cantidad")
+  stockAnterior  Int                      @map("stock_anterior")
+  stockNuevo     Int                      @map("stock_nuevo")
   usuarioId      String                   @map("usuario_id") @db.Uuid
   comentario     String?                  @db.Text
   fecha          DateTime
