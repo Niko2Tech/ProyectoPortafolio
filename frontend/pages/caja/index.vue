@@ -6,7 +6,7 @@ definePageMeta({
 <template>
   <section class="md:p-4 p-1">
     <article class="bg-base-100 shadow-md p-6 rounded-lg">
-      <h1 class="text-2xl font-semibold mb-6">Editar Inventario</h1>
+      <h1 class="text-2xl font-semibold mb-6">Caja</h1>
     </article>
   </section>
 </template>
