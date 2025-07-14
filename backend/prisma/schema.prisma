@@ -35,6 +35,7 @@ model Usuario {
   inventarioMovimientos InventarioMovimiento[]
   cajas                 Caja[]
   cajaMovimientos       CajaMovimiento[]
+  Compra                Compra[]
 
   @@map("usuarios")
 }
@@ -192,28 +193,25 @@ model MetodoPago {
 }
 
 model DocumentoVenta {
-  id                    String               @id @default(uuid()) @db.Uuid
-  tipoDocumento         TipoDocumentoVenta   @map("tipo_documento")
-  numeroDocumento       Int                  @map("numero_documento")
-  usuarioId             String               @map("usuario_id") @db.Uuid
-  clienteId             String?              @map("cliente_id") @db.Uuid
-  fechaEmision          DateTime             @map("fecha_emision")
-  subtotalNeto          Decimal              @map("subtotal_neto") @db.Decimal(10, 2)
-  montoIva              Decimal              @map("monto_iva") @db.Decimal(10, 2)
-  total                 Decimal              @db.Decimal(10, 2)
-  metodoPagoId          Int                  @map("metodo_pago_id")
-  estado                EstadoDocumentoVenta @default(emitida)
-  documentoReferenciaId String?              @map("documento_referencia_id") @db.Uuid
-  comentarios           String?              @db.Text
-  createdAt             DateTime             @default(now()) @map("created_at")
+  id              String               @id @default(uuid()) @db.Uuid
+  tipoDocumento   TipoDocumentoVenta   @map("tipo_documento")
+  numeroDocumento Int                  @default(autoincrement()) @map("numero_documento")
+  usuarioId       String               @map("usuario_id") @db.Uuid
+  clienteId       String?              @map("cliente_id") @db.Uuid
+  fechaEmision    DateTime             @map("fecha_emision")
+  subtotalNeto    Decimal              @map("subtotal_neto") @db.Decimal(10, 2)
+  montoIva        Decimal              @map("monto_iva") @db.Decimal(10, 2)
+  total           Decimal              @db.Decimal(10, 2)
+  metodoPagoId    Int                  @map("metodo_pago_id")
+  estado          EstadoDocumentoVenta @default(emitida)
+  createdAt       DateTime             @default(now()) @map("created_at")
 
   // Relaciones
-  usuario                 Usuario                 @relation(fields: [usuarioId], references: [id])
-  cliente                 Cliente?                @relation(fields: [clienteId], references: [id])
-  metodoPago              MetodoPago              @relation(fields: [metodoPagoId], references: [id])
-  documentoReferencia     DocumentoVenta?         @relation("DocReferencia", fields: [documentoReferenciaId], references: [id])
-  documentosReferenciados DocumentoVenta[]        @relation("DocReferencia")
-  detalles                DocumentoVentaDetalle[]
+  usuario        Usuario                 @relation(fields: [usuarioId], references: [id])
+  cliente        Cliente?                @relation(fields: [clienteId], references: [id])
+  metodoPago     MetodoPago              @relation(fields: [metodoPagoId], references: [id])
+  detalles       DocumentoVentaDetalle[]
+  CajaMovimiento CajaMovimiento[]
 
   @@unique([tipoDocumento, numeroDocumento])
   @@map("documentos_venta")
@@ -265,9 +263,11 @@ model Compra {
   estado          EstadoCompra        @default(pendiente)
   createdAt       DateTime            @default(now()) @map("created_at")
   updatedAt       DateTime            @updatedAt @map("updated_at")
+  usuarioId       String              @map("usuario_id") @db.Uuid
 
   // Relaciones
   proveedor Proveedor       @relation(fields: [proveedorId], references: [id])
+  usuario   Usuario         @relation(fields: [usuarioId], references: [id])
   detalles  CompraDetalle[]
 
   @@unique([proveedorId, tipoDocumento, numeroDocumento])
@@ -374,17 +374,15 @@ enum TipoMovimientoInventario {
 }
 
 model Caja {
-  id                  String     @id @default(uuid()) @db.Uuid
-  usuarioId           String     @map("usuario_id") @db.Uuid
-  fechaApertura       DateTime   @map("fecha_apertura")
-  montoApertura       Decimal    @map("monto_apertura") @db.Decimal(10, 2)
-  fechaCierre         DateTime?  @map("fecha_cierre")
-  montoCierreEfectivo Decimal?   @map("monto_cierre_efectivo") @db.Decimal(10, 2)
-  montoCierreTarjetas Decimal?   @map("monto_cierre_tarjetas") @db.Decimal(10, 2)
-  montoCierreOtros    Decimal?   @map("monto_cierre_otros") @db.Decimal(10, 2)
-  diferencia          Decimal?   @db.Decimal(10, 2)
-  estado              EstadoCaja @default(abierta)
-  comentario          String?    @db.Text
+  id            String     @id @default(uuid()) @db.Uuid
+  usuarioId     String     @map("usuario_id") @db.Uuid
+  fechaApertura DateTime   @map("fecha_apertura")
+  montoApertura Decimal    @map("monto_apertura") @db.Decimal(10, 2)
+  fechaCierre   DateTime?  @map("fecha_cierre")
+  montoCierre   Decimal?   @map("monto_cierre") @db.Decimal(10, 2)
+  diferencia    Decimal?   @db.Decimal(10, 2)
+  estado        EstadoCaja @default(abierta)
+  comentario    String?    @db.Text
 
   // Relaciones
   usuario     Usuario          @relation(fields: [usuarioId], references: [id])
@@ -406,16 +404,16 @@ model CajaMovimiento {
   tipoMovimiento TipoMovimientoCaja @map("tipo_movimiento")
   metodoPagoId   Int                @map("metodo_pago_id")
   monto          Decimal            @db.Decimal(10, 2)
-  documentoId    String?            @map("documento_id") @db.Uuid
-  tipoDocumento  String?            @map("tipo_documento") @db.VarChar(50)
-  comentario     String?            @db.Text
-  fecha          DateTime
+  documentoId    String             @map("documento_id") @db.Uuid
+  tipoDocumento  TipoDocumentoVenta @map("tipo_documento")
+  fecha          DateTime           @default(now())
   usuarioId      String             @map("usuario_id") @db.Uuid
 
   // Relaciones
-  caja       Caja       @relation(fields: [cajaId], references: [id])
-  metodoPago MetodoPago @relation(fields: [metodoPagoId], references: [id])
-  usuario    Usuario    @relation(fields: [usuarioId], references: [id])
+  caja       Caja            @relation(fields: [cajaId], references: [id])
+  metodoPago MetodoPago      @relation(fields: [metodoPagoId], references: [id])
+  usuario    Usuario         @relation(fields: [usuarioId], references: [id])
+  documento  DocumentoVenta? @relation(fields: [documentoId], references: [id])
 
   @@map("caja_movimientos")
 }
