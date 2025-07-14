@@ -13,6 +13,8 @@ import { NestModule, MiddlewareConsumer } from '@nestjs/common';
 import { CommunesModule } from './communes/communes.module';
 import { InventoryModule } from './inventory/inventory.module';
 import { PurchaseModule } from './purchase/purchase.module';
+import { CajaModule } from './caja/caja.module';
+import { SalesModule } from './sales/sales.module';
 
 @Module({
   imports: [
@@ -28,6 +30,8 @@ import { PurchaseModule } from './purchase/purchase.module';
     CommunesModule,
     InventoryModule,
     PurchaseModule,
+    CajaModule,
+    SalesModule,
   ],
 })
 export class AppModule implements NestModule {
