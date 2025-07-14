@@ -180,6 +180,12 @@ watchEffect(() => {
                       Editar compra
                     </NuxtLink>
                   </li>
+                  <li>
+                    <NuxtLink to="/compra/cambiarEstado">
+                      <Icon name="mdi:swap-horizontal" />
+                      Cambiar estado
+                    </NuxtLink>
+                  </li>
                 </ul>
               </transition>
             </li>

@@ -96,6 +96,10 @@ const handleSubmit = async (event: Event) => {
       afectoIva: true,
       activo: true,
     }
+
+    setTimeout(() => {
+      messageSuccess.value = ''
+    }, 3000)
   } catch (error: any) {
     console.error('Error al crear producto:', error)
     messageError.value = error?.data?.message || 'Ocurrió un error al crear el producto.'
@@ -116,7 +120,13 @@ watch(
 <template>
   <section class="md:p-4 p-1">
     <article class="bg-base-100 shadow-md p-6 rounded-lg">
-      <h1 class="text-2xl font-semibold mb-6">Crear Producto</h1>
+      <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-semibold mb-6">Crear Producto</h1>
+        <button class="btn btn-sm btn-outline" @click="navigateTo('/inventario')">
+          <Icon name="mdi:arrow-left" />
+          Volver a inventario
+        </button>
+      </div>
       <p v-if="messageSuccess" class="text-success text-lg mb-4">
         {{ messageSuccess }}
       </p>
