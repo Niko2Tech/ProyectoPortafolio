@@ -22,7 +22,7 @@ export class PurchaseService {
   async create(createCompraDto: CreateCompraDto) {
     try {
       // Separar los detalles del DTO principal
-      const { detalles, usuarioId, ...compraData } = createCompraDto;
+      const { detalles, ...compraData } = createCompraDto;
 
       // Verificar que todos los productos existan
       const productIds = detalles.map((detalle) => detalle.productoId);
@@ -72,7 +72,7 @@ export class PurchaseService {
                 productoId: detalle.productoId,
                 tipoMovimiento: 'entrada',
                 cantidad: detalle.cantidad,
-                usuarioId: usuarioId,
+                usuarioId: compraData.usuarioId,
                 comentario: `Compra recibida - Documento: ${compra.tipoDocumento.toUpperCase()} ${compra.numeroDocumento}`,
               }),
             ),
@@ -211,6 +211,12 @@ export class PurchaseService {
         skip,
         take: limit,
         include: {
+          usuario: {
+            select: {
+              id: true,
+              nombre: true,
+            },
+          },
           proveedor: {
             select: {
               id: true,
@@ -252,6 +258,12 @@ export class PurchaseService {
       const compra = await this.prisma.compra.findUnique({
         where: { id },
         include: {
+          usuario: {
+            select: {
+              id: true,
+              nombre: true,
+            },
+          },
           proveedor: {
             select: {
               id: true,
