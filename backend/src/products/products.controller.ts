@@ -43,6 +43,11 @@ export class ProductsController {
     return this.productsService.findAll(query);
   }
 
+  @Get('all')
+  findAllProducts() {
+    return this.productsService.findAllProducts();
+  }
+
   @Get('resumen')
   findResume() {
     return this.productsService.getResumenInventario();

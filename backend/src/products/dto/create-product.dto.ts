@@ -38,17 +38,6 @@ export class CreateProductDto {
   @IsString()
   descripcion?: string;
 
-  @ApiProperty({ description: 'Precio neto del producto' })
-  @IsNotEmpty()
-  @IsNumber({ maxDecimalPlaces: 2 })
-  @Transform(({ value }) => {
-    if (typeof value === 'string' || typeof value === 'number') {
-      return parseFloat(value.toString());
-    }
-    throw new Error('El valor debe ser un número o string válido');
-  })
-  precioNeto: number;
-
   @ApiProperty({ description: 'Precio de venta del producto' })
   @IsNotEmpty()
   @IsNumber({ maxDecimalPlaces: 2 })
@@ -122,4 +111,12 @@ export class CreateProductDto {
   @IsOptional()
   @IsBoolean()
   afectoIva?: boolean = true;
+
+  @ApiProperty({
+    description: 'Indica si el producto está activo',
+    default: true,
+  })
+  @IsOptional()
+  @IsBoolean()
+  activo?: boolean = true;
 }

@@ -44,6 +44,9 @@ export class ProductsService {
       { nombre: { contains: search, mode: Prisma.QueryMode.insensitive } },
       { sku: { contains: search, mode: Prisma.QueryMode.insensitive } },
       {
+        codigoBarras: { contains: search, mode: Prisma.QueryMode.insensitive },
+      },
+      {
         marca: {
           nombre: { contains: search, mode: Prisma.QueryMode.insensitive },
         },
@@ -220,5 +223,10 @@ export class ProductsService {
       productosBajoStock,
       productosSinStock,
     };
+  }
+
+  async findAllProducts() {
+    const productos = await this.prisma.producto.findMany();
+    return productos;
   }
 }
