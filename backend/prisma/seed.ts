@@ -531,6 +531,33 @@ async function main() {
     );
   }
 
+  // Seed de métodos de pago
+  const metodosPagoData = [
+    { id: 1, codigo: 'EFECTIVO', nombre: 'Efectivo', activo: true },
+    {
+      id: 2,
+      codigo: 'TARJETA_CREDITO',
+      nombre: 'Tarjeta de crédito',
+      activo: true,
+    },
+    {
+      id: 3,
+      codigo: 'TARJETA_DEBITO',
+      nombre: 'Tarjeta de débito',
+      activo: true,
+    },
+    { id: 4, codigo: 'TRANSFERENCIA', nombre: 'Transferencia', activo: true },
+  ];
+
+  console.log('💳 Creando métodos de pago...');
+  for (const metodoPago of metodosPagoData) {
+    await prisma.metodoPago.upsert({
+      where: { codigo: metodoPago.codigo },
+      update: {},
+      create: metodoPago,
+    });
+  }
+
   console.log('🎉 Seed completado exitosamente!');
 }
 

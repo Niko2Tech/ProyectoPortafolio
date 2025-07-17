@@ -85,7 +85,7 @@ enum TipoCliente {
 model Producto {
   id             String   @id @default(uuid()) @db.Uuid
   sku            String   @unique @db.VarChar(50)
-  codigoBarras   String   @map("codigo_barras") @db.VarChar(50)
+  codigoBarras   String   @unique @map("codigo_barras") @db.VarChar(50)
   nombre         String   @db.VarChar(100)
   descripcion    String?  @db.Text
   costoNeto      Decimal  @map("costo_neto") @db.Decimal(10, 2) // Precio de costo sin IVA
@@ -174,16 +174,12 @@ model Proveedor {
 }
 
 model MetodoPago {
-  id                  Int      @id @default(autoincrement())
-  codigo              String   @unique @db.VarChar(20)
-  nombre              String   @unique @db.VarChar(50)
-  descripcion         String?  @db.Text
-  requiereComprobante Boolean  @default(false) @map("requiere_comprobante")
-  activo              Boolean  @default(true)
-  permiteVuelto       Boolean  @default(false) @map("permite_vuelto")
-  permitePagoParcial  Boolean  @default(false) @map("permite_pago_parcial")
-  createdAt           DateTime @default(now()) @map("created_at")
-  updatedAt           DateTime @updatedAt @map("updated_at")
+  id        Int      @id @default(autoincrement())
+  codigo    String   @unique @db.VarChar(20)
+  nombre    String   @unique @db.VarChar(50)
+  activo    Boolean  @default(true)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   // Relaciones
   documentosVenta DocumentoVenta[]

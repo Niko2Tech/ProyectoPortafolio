@@ -58,7 +58,12 @@ export class SalesService {
         usuarioId: ventaData.usuarioId,
       };
 
-      await this.cajaService.movimientosCaja(cajaMovimientoDto);
+      await prisma.cajaMovimiento.create({
+        data: {
+          ...cajaMovimientoDto,
+          fecha: new Date(ventaData.fechaEmision),
+        },
+      });
 
       // 6. Registrar movimientos de inventario
       await Promise.all(

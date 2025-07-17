@@ -5,6 +5,7 @@ import {
   IsEnum,
   IsNotEmpty,
   IsNumber,
+  IsOptional,
   IsUUID,
   ValidateNested,
 } from 'class-validator';
@@ -12,11 +13,6 @@ import { TipoDocumentoVenta, EstadoDocumentoVenta } from '@prisma/client';
 import { Type } from 'class-transformer';
 
 export class CrearVentaDetalleDto {
-  @ApiProperty({ description: 'ID del documento' })
-  @IsNotEmpty()
-  @IsUUID()
-  documentoId: string;
-
   @ApiProperty({ description: 'ID del producto' })
   @IsNotEmpty()
   @IsUUID()
@@ -55,14 +51,14 @@ export class CrearVentaDto {
   usuarioId: string;
 
   @ApiProperty({ description: 'ID del cliente' })
-  @IsNotEmpty()
+  @IsOptional()
   @IsUUID()
-  clienteId: string;
+  clienteId?: string;
 
   @ApiProperty({ description: 'Fecha de emisión' })
   @IsNotEmpty()
   @IsDateString()
-  fechaEmision: Date;
+  fechaEmision: string;
 
   @ApiProperty({ description: 'Subtotal neto' })
   @IsNotEmpty()

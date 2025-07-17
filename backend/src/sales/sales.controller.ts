@@ -1,4 +1,4 @@
-import { Controller, Post, Body, UseGuards } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, Get, Param } from '@nestjs/common';
 import { SalesService } from './sales.service';
 import { CrearVentaDto } from './dto/crear-venta.dto';
 import { ApiTags } from '@nestjs/swagger';
@@ -13,5 +13,10 @@ export class SalesController {
   @Post('procesar-venta')
   async procesarVenta(@Body() procesarVentaDto: CrearVentaDto) {
     return this.salesService.procesarVenta(procesarVentaDto);
+  }
+
+  @Get('obtener-venta/:id')
+  async obtenerVenta(@Param('id') id: string) {
+    return this.salesService.obtenerVenta(id);
   }
 }
