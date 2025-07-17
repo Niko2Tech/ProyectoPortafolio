@@ -32,6 +32,7 @@
                 :class="{ 'input-error': item.cantidad > item.stockActual }"
                 v-model.number="item.cantidad"
                 @change="onCantidadChange(item)"
+                readonly
               />
             </td>
             <td>${{ (Number(item.precioVenta) * item.cantidad).toLocaleString() }}</td>
@@ -61,7 +62,11 @@
       </div>
       <div class="flex gap-2 items-center">
         <div class="text-lg font-bold">Total: ${{ totalCarrito.toLocaleString() }}</div>
-        <button class="btn btn-success" :disabled="!carrito.length || hayStockInsuficiente">
+        <button
+          class="btn btn-success"
+          :disabled="!carrito.length || hayStockInsuficiente"
+          @click="openModal"
+        >
           <Icon name="mdi:cash-multiple" />
           Pagar
         </button>
@@ -76,8 +81,17 @@ import { computed } from 'vue'
 interface CarritoItem extends Producto {
   cantidad: number
 }
+
+const openModal = () => {
+  emit('abrir-modal-pago')
+}
 const props = defineProps<{ carrito: CarritoItem[] }>()
-const emit = defineEmits(['update-cantidad', 'vaciar-carrito', 'eliminar-carrito'])
+const emit = defineEmits([
+  'update-cantidad',
+  'vaciar-carrito',
+  'eliminar-carrito',
+  'abrir-modal-pago',
+])
 function onCantidadChange(item: CarritoItem) {
   emit('update-cantidad', item)
 }

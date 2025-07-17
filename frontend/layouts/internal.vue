@@ -34,6 +34,22 @@ watchEffect(() => {
         <nav>
           <ul class="menu gap-2 w-full">
             <li>
+              <NuxtLink to="/caja" class="flex items-center gap-2 w-full">
+                <Icon name="mdi:cash-register" />
+                <span>Caja diaria</span>
+              </NuxtLink>
+              <transition name="fade-slide">
+                <ul v-show="menuAbierto == 'caja'" class="mt-1">
+                  <li>
+                    <NuxtLink to="/caja/historial">
+                      <Icon name="mdi:history" />
+                      Historial
+                    </NuxtLink>
+                  </li>
+                </ul>
+              </transition>
+            </li>
+            <li>
               <NuxtLink to="/dashboard">
                 <Icon name="carbon:dashboard" />
                 Dashboard
@@ -70,24 +86,6 @@ watchEffect(() => {
               </transition>
             </li>
 
-            <!-- Menú desplegable de Caja -->
-            <li>
-              <NuxtLink to="/caja" class="flex items-center gap-2 w-full">
-                <Icon name="mdi:cash-register" />
-                <span>Caja</span>
-              </NuxtLink>
-              <transition name="fade-slide">
-                <ul v-show="menuAbierto == 'caja'" class="mt-1">
-                  <li>
-                    <NuxtLink to="/caja/historial">
-                      <Icon name="mdi:history" />
-                      Historial
-                    </NuxtLink>
-                  </li>
-                </ul>
-              </transition>
-            </li>
-
             <!-- Menú desplegable de Ventas -->
             <li>
               <NuxtLink to="/venta" class="flex items-center gap-2 w-full">
@@ -113,6 +111,7 @@ watchEffect(() => {
             </li>
 
             <!-- Menú desplegable de Clientes -->
+            <!--
             <li>
               <NuxtLink to="/cliente" class="flex items-center gap-2 w-full">
                 <Icon name="mdi:account-group" />
@@ -135,6 +134,7 @@ watchEffect(() => {
                 </ul>
               </transition>
             </li>
+            -->
 
             <!-- Menú desplegable de Proveedores -->
             <li>
@@ -190,6 +190,7 @@ watchEffect(() => {
               </transition>
             </li>
             <!-- Menú desplegable de Gastos -->
+            <!--
             <li>
               <NuxtLink to="/gasto" class="flex items-center gap-2 w-full">
                 <Icon name="mdi:cash-minus" />
@@ -218,7 +219,9 @@ watchEffect(() => {
                 </ul>
               </transition>
             </li>
+            -->
             <!-- Menú desplegable de Usuarios -->
+            <!--
             <li>
               <NuxtLink to="/usuarios" class="flex items-center gap-2 w-full">
                 <Icon name="mdi:account-multiple" />
@@ -241,6 +244,7 @@ watchEffect(() => {
                 </ul>
               </transition>
             </li>
+            -->
 
             <!-- Menú desplegable de Configuración -->
             <li>
@@ -274,12 +278,12 @@ watchEffect(() => {
                       Métodos de Pago
                     </NuxtLink>
                   </li>
-                  <li>
+                  <!--<li>
                     <NuxtLink to="/configuracion/tipos-gasto">
                       <Icon name="mdi:tag-multiple" />
                       Tipos de Gasto
                     </NuxtLink>
-                  </li>
+                  </li>-->
                 </ul>
               </transition>
             </li>

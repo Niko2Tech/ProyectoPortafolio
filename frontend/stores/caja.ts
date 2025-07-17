@@ -146,7 +146,7 @@ export const useCajaStore = defineStore('caja', {
 
       try {
         const response = await useApiFetch('/caja/cerrar-caja', {
-          method: 'PUT',
+          method: 'POST',
           body: cerrarCajaDto,
         })
 
@@ -161,10 +161,7 @@ export const useCajaStore = defineStore('caja', {
           // Limpiar la persistencia ya que la caja está cerrada
           this.limpiarPersistencia()
 
-          // Limpiar el estado después de un breve delay para mostrar el resultado
-          setTimeout(() => {
-            this.cajaActual = null
-          }, 2000)
+          this.cajaActual = null
 
           return true
         }

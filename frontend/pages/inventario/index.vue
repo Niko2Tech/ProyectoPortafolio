@@ -47,7 +47,7 @@ const columns = [
   { key: 'codigoBarras', label: 'Código de barras' },
   {
     key: 'precioVenta',
-    label: 'Precio',
+    label: 'Precio venta',
     formatter: (value: any) => formatChileanCurrency(Number(value)),
   },
   {
@@ -119,7 +119,7 @@ function handlePageChange(newPage: number) {
     >
       <!-- Acciones del header -->
       <template #header-actions>
-        <button class="btn btn-dash btn-accent mr-2" @click="router.push('/inventario')">
+        <button class="btn btn-dash btn-accent mr-2" @click="router.push('/compra/crear')">
           <Icon name="mdi:plus" class="mr-2" />
           Agregar inventario
         </button>

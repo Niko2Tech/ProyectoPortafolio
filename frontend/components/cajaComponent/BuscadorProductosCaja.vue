@@ -63,6 +63,12 @@ import type { Producto } from '~/types/product'
 import { formatChileanCurrency } from '#imports'
 
 const emit = defineEmits(['select'])
+
+// NUEVA PROP para controlar el focus
+const props = defineProps<{
+  disabled?: boolean
+}>()
+
 const productos = ref<Producto[]>([])
 const productosFiltrados = ref<Producto[]>([])
 const searchTerm = ref('')
@@ -74,16 +80,69 @@ const currentPage = ref(1)
 onMounted(async () => {
   const response = await useApiFetch('/products/all')
   productos.value = response
-  productosFiltrados.value = productos.value
+  productosFiltrados.value = []
 
-  // Autoenfocar input al montar
-  searchInput.value?.focus()
-
-  // Reenfocar si se hace clic fuera
-  window.addEventListener('click', () => {
+  // Solo auto-enfocar si no está deshabilitado
+  if (!props.disabled) {
     searchInput.value?.focus()
-  })
+  }
 })
+
+// Función para manejar el focus
+function handleFocus() {
+  if (!props.disabled) {
+    searchInput.value?.focus()
+  }
+}
+
+// Función pública para enfocar/desenfocar
+function setFocus(shouldFocus: boolean) {
+  if (shouldFocus && !props.disabled) {
+    searchInput.value?.focus()
+  } else {
+    searchInput.value?.blur()
+  }
+}
+
+// Exponer la función para uso externo
+defineExpose({
+  setFocus,
+})
+
+// Watcher para controlar el focus cuando cambia la prop disabled
+watch(
+  () => props.disabled,
+  (newVal) => {
+    if (newVal) {
+      searchInput.value?.blur()
+    } else {
+      // Retrasar el focus para que el modal se cierre completamente
+      setTimeout(() => {
+        searchInput.value?.focus()
+      }, 100)
+    }
+  }
+)
+
+// Manejar clicks para reactivar focus solo si no está deshabilitado
+function handleWindowClick() {
+  if (!props.disabled) {
+    searchInput.value?.focus()
+  }
+}
+
+// Configurar el event listener condicionalmente
+watch(
+  () => props.disabled,
+  (newVal) => {
+    if (newVal) {
+      window.removeEventListener('click', handleWindowClick)
+    } else {
+      window.addEventListener('click', handleWindowClick)
+    }
+  },
+  { immediate: true }
+)
 
 function handleSearch() {
   const term = searchTerm.value.toLowerCase()
@@ -98,13 +157,18 @@ function handleSearch() {
 }
 
 function buscarPorCodigo() {
+  // Solo procesar si no está deshabilitado
+  if (props.disabled) return
+
   const match = productos.value.find(
     (p) => p.codigoBarras.toLowerCase() === searchTerm.value.toLowerCase()
   )
   if (match) {
     agregarProducto(match)
     searchTerm.value = ''
-    productosFiltrados.value = productos.value
+    productosFiltrados.value = []
+  } else {
+    searchTerm.value = ''
   }
 }
 
@@ -125,5 +189,7 @@ watch(productosFiltrados, () => {
 
 function agregarProducto(producto: Producto) {
   emit('select', producto)
+  productosFiltrados.value = []
+  searchTerm.value = ''
 }
 </script>

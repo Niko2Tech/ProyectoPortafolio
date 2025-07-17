@@ -18,7 +18,6 @@
       </label>
       <textarea v-model="comentario" class="textarea textarea-bordered w-full" rows="2" />
     </div>
-    <div v-if="error" class="alert alert-error shadow-sm">{{ error }}</div>
     <button class="btn btn-primary w-full" :disabled="loading">
       <span v-if="loading" class="loading loading-spinner"></span>
       Abrir caja
@@ -26,7 +25,7 @@
   </form>
 </template>
 <script setup lang="ts">
-const props = defineProps<{ loading: boolean; error: string | null }>()
+const props = defineProps<{ loading: boolean }>()
 const emit = defineEmits(['submit'])
 const montoApertura = ref(0)
 const comentario = ref('')

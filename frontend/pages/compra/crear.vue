@@ -8,6 +8,7 @@ import type { Compra, CompraDetalle } from '~/types/purchases'
 import type { Producto } from '~/types/product'
 import type { Suppliers } from '~/types/suppliers'
 import { useUserStore } from '@/stores/user'
+import { navigateTo } from '#imports'
 
 const userStore = useUserStore()
 
@@ -19,6 +20,8 @@ const productosFiltrados = ref<Producto[]>([])
 const searchTerm = ref('')
 const selectedProduct = ref<Producto | null>(null)
 const showProductDropdown = ref(false)
+
+var setTimeout: typeof window.setTimeout
 
 const compra = ref<Omit<Compra, 'id' | 'createdAt' | 'updatedAt'>>({
   tipoDocumento: 'factura',
@@ -44,7 +47,7 @@ onMounted(async () => {
   try {
     const [proveedores, productos] = await Promise.all([
       useApiFetch('/suppliers'),
-      useApiFetch('/products'),
+      useApiFetch('/products/all'),
     ])
     // Manejar tanto respuestas paginadas como arrays directos
     proveedorList.value = Array.isArray(proveedores) ? proveedores : proveedores.data || []
@@ -69,7 +72,7 @@ const handleProductSearch = () => {
       producto.sku.toLowerCase().includes(term) ||
       producto.codigoBarras.toLowerCase().includes(term)
   )
-  showProductDropdown.value = productosFiltrados.value.length > 0
+  showProductDropdown.value = true // Mostrar siempre que hay búsqueda
 }
 
 const selectProduct = (producto: Producto) => {
@@ -272,7 +275,8 @@ watch(() => compra.value.detalles, calcularTotales, { deep: true })
               <input
                 v-model="searchTerm"
                 @input="handleProductSearch"
-                @focus="showProductDropdown = true"
+                @focus="handleProductSearch"
+                @blur="() => setTimeout(() => (showProductDropdown = false), 150)"
                 type="text"
                 placeholder="Buscar por nombre, SKU o código de barras..."
                 class="input input-bordered w-full"
@@ -280,20 +284,36 @@ watch(() => compra.value.detalles, calcularTotales, { deep: true })
 
               <!-- Dropdown de productos -->
               <div
-                v-if="showProductDropdown && productosFiltrados.length > 0"
+                v-if="showProductDropdown && searchTerm && searchTerm.trim()"
                 class="absolute z-50 w-full mt-1 bg-base-100 border border-base-300 rounded-lg shadow-lg max-h-60 overflow-y-auto"
               >
-                <div
-                  v-for="producto in productosFiltrados"
-                  :key="producto.id"
-                  @click="selectProduct(producto)"
-                  class="p-3 hover:bg-base-200 cursor-pointer border-b border-base-300 last:border-b-0"
-                >
-                  <div class="font-medium">{{ producto.nombre }}</div>
-                  <div class="text-sm text-base-content/70">
-                    SKU: {{ producto.sku }} | Stock: {{ producto.stockActual }}
+                <template v-if="productosFiltrados.length > 0">
+                  <div
+                    v-for="producto in productosFiltrados"
+                    :key="producto.id"
+                    @click="selectProduct(producto)"
+                    class="p-3 hover:bg-base-200 cursor-pointer border-b border-base-300 last:border-b-0"
+                  >
+                    <div class="font-medium">{{ producto.nombre }}</div>
+                    <div class="text-sm text-base-content/70">
+                      SKU: {{ producto.sku }} | Stock: {{ producto.stockActual }}
+                    </div>
                   </div>
-                </div>
+                </template>
+                <template v-else>
+                  <div class="p-3 text-center text-base-content/70">
+                    No se encontró el producto.
+                  </div>
+                  <div class="p-3 text-center">
+                    <button
+                      type="button"
+                      class="btn btn-outline btn-primary w-full"
+                      @click="() => navigateTo('/inventario/crear')"
+                    >
+                      Crear producto
+                    </button>
+                  </div>
+                </template>
               </div>
             </div>
 
