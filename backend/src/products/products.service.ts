@@ -25,7 +25,9 @@ export class ProductsService {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         // SKU único
         if (error.code === 'P2002') {
-          throw new BadRequestException('Ya existe un producto con ese SKU');
+          throw new BadRequestException(
+            'Ya existe un producto con ese SKU o código de barras',
+          );
         }
         // FK no encontrada
         if (error.code === 'P2003') {
